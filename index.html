@@ -6,195 +6,136 @@
 <title>QuizBridge</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Noto+Sans+Tamil&family=Noto+Sans+Malayalam&family=Noto+Sans+Kannada&family=Noto+Sans+Devanagari&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#060612;--surface:#0d0d22;--card:#111128;--border:#1e1e42;
-  --accent:#6c63ff;--accent2:#ff6584;--green:#00d4aa;--yellow:#ffd166;
-  --text:#f0efff;--muted:#7b7aad;--r:14px;
-}
+:root{--bg:#060612;--surface:#0d0d22;--card:#111128;--border:#1e1e42;--accent:#6c63ff;--accent2:#ff6584;--green:#00d4aa;--yellow:#ffd166;--text:#f0efff;--muted:#7b7aad;--r:14px}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Sora',sans-serif}
-body::before{content:'';position:fixed;inset:0;z-index:0;
-  background:radial-gradient(ellipse 60% 50% at 20% 20%,rgba(108,99,255,0.15),transparent 60%),
-             radial-gradient(ellipse 50% 40% at 80% 80%,rgba(0,212,170,0.1),transparent 60%);
-  pointer-events:none;}
+body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 60% 50% at 20% 20%,rgba(108,99,255,.15),transparent 60%),radial-gradient(ellipse 50% 40% at 80% 80%,rgba(0,212,170,.1),transparent 60%);pointer-events:none}
 .view{display:none;position:relative;z-index:1;min-height:100vh;flex-direction:column}
 .view.on{display:flex}
-.t-nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;
-  background:rgba(13,13,34,0.92);border-bottom:1px solid var(--border);
-  backdrop-filter:blur(12px);position:sticky;top:0;z-index:50;}
-.logo{font-size:1.35rem;font-weight:800;letter-spacing:-1px}
-.logo span{color:var(--accent)}.logo b{color:var(--green)}
-.nav-pill{display:flex;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:4px}
-.npbtn{padding:7px 20px;border-radius:50px;border:none;cursor:pointer;
-  font-family:'Sora',sans-serif;font-weight:600;font-size:0.84rem;
-  background:transparent;color:var(--muted);transition:all 0.2s}
+.t-nav{display:flex;align-items:center;justify-content:space-between;padding:15px 28px;background:rgba(13,13,34,.94);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50}
+.logo{font-size:1.3rem;font-weight:800;letter-spacing:-1px}.logo span{color:var(--accent)}.logo b{color:var(--green)}
+.nav-pill{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:4px}
+.npbtn{padding:6px 18px;border-radius:50px;border:none;cursor:pointer;font-family:'Sora',sans-serif;font-weight:600;font-size:.83rem;background:transparent;color:var(--muted);transition:all .2s}
 .npbtn.on{background:var(--accent);color:#fff}
-.t-body{flex:1;padding:28px 32px;max-width:960px;margin:0 auto;width:100%}
-.stabs{display:flex;gap:2px;margin-bottom:24px;border-bottom:2px solid var(--border)}
-.stab{padding:10px 22px;border:none;background:transparent;cursor:pointer;
-  font-family:'Sora',sans-serif;font-weight:600;font-size:0.88rem;color:var(--muted);
-  border-bottom:3px solid transparent;margin-bottom:-2px;transition:all 0.2s}
+.t-body{flex:1;padding:24px 28px;max-width:960px;margin:0 auto;width:100%}
+.stabs{display:flex;gap:2px;margin-bottom:22px;border-bottom:2px solid var(--border)}
+.stab{padding:9px 20px;border:none;background:transparent;cursor:pointer;font-family:'Sora',sans-serif;font-weight:600;font-size:.87rem;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
 .stab.on{color:var(--text);border-bottom-color:var(--accent)}
-.spanel{display:none}.spanel.on{display:block;animation:fadeUp 0.25s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:18px}
-.card-title{font-size:0.98rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
-.card-title .icon{width:30px;height:30px;border-radius:8px;background:var(--accent);
-  display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0}
-label{display:block;font-size:0.75rem;color:var(--muted);font-weight:600;margin-bottom:5px;
-  letter-spacing:0.5px;text-transform:uppercase}
-input,select{width:100%;padding:10px 13px;background:var(--surface);
-  border:1px solid var(--border);border-radius:9px;color:var(--text);
-  font-family:'Sora',sans-serif;font-size:0.88rem;margin-bottom:12px;
-  outline:none;transition:border 0.2s,box-shadow 0.2s}
-input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,0.15)}
+.spanel{display:none}.spanel.on{display:block;animation:up .25s ease}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.card-title{font-size:.97rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:9px}
+.ico{width:28px;height:28px;border-radius:7px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+label{display:block;font-size:.73rem;color:var(--muted);font-weight:600;margin-bottom:4px;letter-spacing:.5px;text-transform:uppercase}
+input,select{width:100%;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Sora',sans-serif;font-size:.87rem;margin-bottom:11px;outline:none;transition:border .2s,box-shadow .2s}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,.15)}
 select option{background:var(--card)}
-.btn{padding:10px 24px;border:none;border-radius:50px;cursor:pointer;
-  font-family:'Sora',sans-serif;font-weight:700;font-size:0.88rem;
-  display:inline-flex;align-items:center;gap:7px;transition:all 0.2s}
-.btn-accent{background:var(--accent);color:#fff}
-.btn-accent:hover{background:#5a52e0;transform:translateY(-2px);box-shadow:0 8px 20px rgba(108,99,255,0.3)}
-.btn-green{background:var(--green);color:#060612}
-.btn-green:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.btn{padding:9px 22px;border:none;border-radius:50px;cursor:pointer;font-family:'Sora',sans-serif;font-weight:700;font-size:.87rem;display:inline-flex;align-items:center;gap:6px;transition:all .2s}
+.btn-accent{background:var(--accent);color:#fff}.btn-accent:hover{background:#5a52e0;transform:translateY(-2px)}
+.btn-green{background:var(--green);color:#060612}.btn-green:hover{filter:brightness(1.1);transform:translateY(-2px)}
 .btn-yellow{background:var(--yellow);color:#060612}
-.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--muted)}
-.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-.btn-sm{padding:7px 15px;font-size:0.8rem}
-.btn-danger{background:rgba(255,101,132,0.12);color:var(--accent2);border:1px solid rgba(255,101,132,0.3)}
-.upload-zone{border:2px dashed var(--border);border-radius:var(--r);padding:36px;
-  text-align:center;cursor:pointer;transition:all 0.2s;background:var(--surface)}
-.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(108,99,255,0.05)}
-.upload-icon{font-size:2.2rem;margin-bottom:10px}
-.preview-wrap{overflow-x:auto;margin-top:14px}
-table{width:100%;border-collapse:collapse;font-size:0.83rem}
-th{background:rgba(108,99,255,0.15);color:var(--accent);padding:9px 12px;text-align:left;
-  font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px}
-td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
-tr:hover td{background:rgba(255,255,255,0.02)}
-.correct-badge{display:inline-block;padding:2px 8px;border-radius:20px;
-  background:rgba(0,212,170,0.15);color:var(--green);font-size:0.75rem;font-weight:700}
-.stu-row{display:grid;grid-template-columns:1fr 160px auto;gap:10px;align-items:end;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--muted)}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:6px 14px;font-size:.79rem}
+.btn-danger{background:rgba(255,101,132,.12);color:var(--accent2);border:1px solid rgba(255,101,132,.3)}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--r);padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(108,99,255,.05)}
+.preview-wrap{overflow-x:auto;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th{background:rgba(108,99,255,.15);color:var(--accent);padding:8px 11px;text-align:left;font-weight:700;font-size:.73rem;text-transform:uppercase;letter-spacing:.5px}
+td{padding:8px 11px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:hover td{background:rgba(255,255,255,.02)}
+.cbadge{display:inline-block;padding:2px 7px;border-radius:20px;background:rgba(0,212,170,.15);color:var(--green);font-size:.73rem;font-weight:700}
+.stu-row{display:grid;grid-template-columns:1fr 155px auto;gap:9px;align-items:end;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 13px;margin-bottom:7px}
 .stu-row input,.stu-row select{margin:0}
-.link-card{background:var(--surface);border:1px solid var(--border);
-  border-radius:12px;padding:16px;margin-bottom:12px}
-.lc-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px}
-.lc-name{font-weight:700;font-size:1rem}
-.lang-chip{padding:3px 11px;border-radius:50px;font-size:0.73rem;font-weight:700}
-.chip-ta{background:rgba(255,154,60,0.15);color:#ff9a3c}
-.chip-ml{background:rgba(91,196,250,0.15);color:#5bc4fa}
-.chip-kn{background:rgba(111,207,111,0.15);color:#6fcf6f}
-.chip-hi{background:rgba(217,122,242,0.15);color:#d97af2}
-.chip-en{background:rgba(240,239,255,0.1);color:var(--text)}
-.lc-url{font-family:monospace;font-size:0.76rem;color:var(--muted);
-  background:var(--bg);border:1px solid var(--border);border-radius:7px;
-  padding:7px 11px;word-break:break-all;user-select:all;margin-bottom:10px}
-.lc-grid{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start}
-.qr-box{display:flex;justify-content:center;background:#fff;border-radius:8px;padding:6px;width:fit-content}
-.status-done{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.73rem;font-weight:700;background:rgba(0,212,170,0.15);color:var(--green)}
-.status-pending{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.73rem;font-weight:700;background:rgba(255,209,102,0.15);color:var(--yellow)}
-.results-wrap{overflow-x:auto}
-.res-table{width:100%;border-collapse:collapse;font-size:0.82rem;white-space:nowrap}
-.res-table th{background:rgba(108,99,255,0.18);padding:10px 12px;text-align:left;
-  font-size:0.74rem;text-transform:uppercase;letter-spacing:0.5px}
-.res-table td{padding:9px 12px;border-bottom:1px solid var(--border)}
-.c-yes{color:var(--green);font-weight:700}.c-no{color:var(--accent2)}
-.sc-high{padding:3px 9px;border-radius:20px;font-size:0.76rem;font-weight:700;background:rgba(0,212,170,0.15);color:var(--green)}
-.sc-mid{padding:3px 9px;border-radius:20px;font-size:0.76rem;font-weight:700;background:rgba(255,209,102,0.15);color:var(--yellow)}
-.sc-low{padding:3px 9px;border-radius:20px;font-size:0.76rem;font-weight:700;background:rgba(255,101,132,0.15);color:var(--accent2)}
-.host-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin-bottom:18px}
-.host-opt{background:var(--surface);border:1.5px solid var(--border);border-radius:11px;
-  padding:14px;cursor:pointer;transition:all 0.2s;text-align:center}
+.link-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px;margin-bottom:11px}
+.lc-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px;margin-bottom:9px}
+.lc-name{font-weight:700;font-size:.97rem}
+.lang-chip{padding:3px 10px;border-radius:50px;font-size:.72rem;font-weight:700}
+.chip-ta{background:rgba(255,154,60,.15);color:#ff9a3c}.chip-ml{background:rgba(91,196,250,.15);color:#5bc4fa}
+.chip-kn{background:rgba(111,207,111,.15);color:#6fcf6f}.chip-hi{background:rgba(217,122,242,.15);color:#d97af2}
+.chip-en{background:rgba(240,239,255,.1);color:var(--text)}
+.lc-url{font-family:monospace;font-size:.73rem;color:var(--muted);background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;word-break:break-all;user-select:all;margin-bottom:9px}
+.lc-grid{display:grid;grid-template-columns:1fr auto;gap:13px;align-items:start}
+.qr-box{display:flex;justify-content:center;background:#fff;border-radius:7px;padding:5px;width:fit-content}
+.s-done{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.72rem;font-weight:700;background:rgba(0,212,170,.15);color:var(--green)}
+.s-pend{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.72rem;font-weight:700;background:rgba(255,209,102,.15);color:var(--yellow)}
+.rw{overflow-x:auto}
+.rt{width:100%;border-collapse:collapse;font-size:.81rem;white-space:nowrap}
+.rt th{background:rgba(108,99,255,.18);padding:9px 11px;text-align:left;font-size:.73rem;text-transform:uppercase;letter-spacing:.5px}
+.rt td{padding:8px 11px;border-bottom:1px solid var(--border)}
+.cy{color:var(--green);font-weight:700}.cn{color:var(--accent2)}
+.sh{padding:3px 8px;border-radius:20px;font-size:.75rem;font-weight:700;background:rgba(0,212,170,.15);color:var(--green)}
+.sm{padding:3px 8px;border-radius:20px;font-size:.75rem;font-weight:700;background:rgba(255,209,102,.15);color:var(--yellow)}
+.sl{padding:3px 8px;border-radius:20px;font-size:.75rem;font-weight:700;background:rgba(255,101,132,.15);color:var(--accent2)}
+.host-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:9px;margin-bottom:16px}
+.host-opt{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:13px;cursor:pointer;transition:all .2s;text-align:center}
 .host-opt:hover{border-color:var(--accent);transform:translateY(-2px)}
-.ho-name{font-weight:700;font-size:0.9rem;margin:5px 0 3px}
-.ho-desc{color:var(--muted);font-size:0.75rem;margin-bottom:4px}
-.ho-url{color:var(--accent);font-size:0.75rem;font-weight:600}
-.admin-gate{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:100vh;padding:32px;text-align:center}
-.gate-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
-  padding:30px;width:100%;max-width:360px}
-#student-view{align-items:flex-start;justify-content:center;padding:24px 16px}
+.admin-gate{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:28px;text-align:center}
+.gate-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px;width:100%;max-width:360px}
+.step-box{display:flex;gap:10px;margin-bottom:13px}
+.step-num{width:24px;height:24px;min-width:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:.76rem;font-weight:800;display:flex;align-items:center;justify-content:center}
+#student-view{align-items:flex-start;justify-content:center;padding:22px 14px}
 .quiz-shell{width:100%;max-width:600px}
-.quiz-topbar{text-align:center;padding-bottom:20px;margin-bottom:22px;border-bottom:1px solid var(--border)}
-.quiz-topbar .logo{font-size:1.5rem;margin-bottom:4px}
-.quiz-meta{color:var(--muted);font-size:0.88rem}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:20px}
-.prog-bar{height:5px;background:var(--border);border-radius:50px;margin:10px 0}
-.prog-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--accent),var(--green));transition:width 0.4s}
-.prog-label{display:flex;justify-content:space-between;font-size:0.76rem;color:var(--muted);margin-bottom:3px}
-.q-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
-  padding:20px;margin-bottom:12px;animation:fadeUp 0.22s ease}
-.q-num{font-size:0.73rem;color:var(--accent);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px}
-.q-text{font-size:1.02rem;line-height:1.6;margin-bottom:16px;font-weight:500}
-.opt{display:flex;align-items:center;gap:11px;padding:12px 15px;border:2px solid var(--border);
-  border-radius:10px;margin-bottom:7px;cursor:pointer;transition:all 0.18s;font-size:0.91rem}
-.opt:hover{border-color:var(--accent);background:rgba(108,99,255,0.06)}
-.opt.sel{border-color:var(--green);background:rgba(0,212,170,0.07)}
-.opt.right{border-color:var(--green)!important;background:rgba(0,212,170,0.12)!important}
-.opt.wrong{border-color:var(--accent2)!important;background:rgba(255,101,132,0.08)!important}
-.opt-letter{width:25px;height:25px;border-radius:6px;border:1.5px solid var(--border);
-  display:flex;align-items:center;justify-content:center;font-size:0.74rem;font-weight:700;
-  color:var(--muted);flex-shrink:0;transition:all 0.18s}
-.opt.sel .opt-letter{border-color:var(--green);background:var(--green);color:#060612}
-.result-screen{text-align:center;padding:32px 16px}
-.result-emoji{font-size:3.5rem;margin-bottom:14px;animation:pop 0.4s cubic-bezier(.4,0,.2,1)}
-@keyframes pop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
-.result-score{font-size:3.2rem;font-weight:800;margin-bottom:4px}
-.result-label{color:var(--muted);margin-bottom:20px}
-.ar-item{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:14px;margin-bottom:9px;text-align:left}
-.ar-q{font-weight:600;margin-bottom:7px;font-size:0.88rem}
-.ar-opt{font-size:0.83rem;padding:5px 11px;border-radius:7px;margin-bottom:3px}
-.ar-correct{background:rgba(0,212,170,0.1);color:var(--green)}
-.ar-wrong{background:rgba(255,101,132,0.1);color:var(--accent2)}
-.ar-label{font-size:0.69rem;font-weight:700;margin-left:5px;opacity:0.7}
-.toast{position:fixed;bottom:22px;right:22px;z-index:999;background:var(--green);color:#060612;
-  padding:11px 20px;border-radius:50px;font-weight:700;font-size:0.88rem;
-  transform:translateY(80px);transition:transform 0.3s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.quiz-topbar{text-align:center;padding-bottom:18px;margin-bottom:20px;border-bottom:1px solid var(--border)}
+.quiz-meta{color:var(--muted);font-size:.87rem}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.pb{height:5px;background:var(--border);border-radius:50px;margin:9px 0}
+.pf{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--accent),var(--green));transition:width .4s}
+.pl{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:2px}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:11px;animation:up .22s ease}
+.q-num{font-size:.72rem;color:var(--accent);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.q-text{font-size:1rem;line-height:1.6;margin-bottom:14px;font-weight:500}
+.opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:2px solid var(--border);border-radius:9px;margin-bottom:6px;cursor:pointer;transition:all .18s;font-size:.9rem}
+.opt:hover{border-color:var(--accent);background:rgba(108,99,255,.06)}
+.opt.sel{border-color:var(--green);background:rgba(0,212,170,.07)}
+.opt.right{border-color:var(--green)!important;background:rgba(0,212,170,.12)!important}
+.opt.wrong{border-color:var(--accent2)!important;background:rgba(255,101,132,.08)!important}
+.opt-l{width:24px;height:24px;border-radius:5px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.73rem;font-weight:700;color:var(--muted);flex-shrink:0}
+.opt.sel .opt-l{border-color:var(--green);background:var(--green);color:#060612}
+.res-screen{text-align:center;padding:28px 14px}
+.res-emoji{font-size:3.2rem;margin-bottom:12px;animation:pop .4s cubic-bezier(.4,0,.2,1)}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.res-score{font-size:3rem;font-weight:800;margin-bottom:3px}
+.res-label{color:var(--muted);margin-bottom:18px}
+.ar-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:8px;text-align:left}
+.ar-q{font-weight:600;margin-bottom:6px;font-size:.87rem}
+.ar-opt{font-size:.82rem;padding:5px 10px;border-radius:6px;margin-bottom:3px}
+.ar-ok{background:rgba(0,212,170,.1);color:var(--green)}.ar-no{background:rgba(255,101,132,.1);color:var(--accent2)}
+.ar-lbl{font-size:.68rem;font-weight:700;margin-left:4px;opacity:.7}
+.toast{position:fixed;bottom:20px;right:20px;z-index:999;background:var(--green);color:#060612;padding:10px 18px;border-radius:50px;font-weight:700;font-size:.87rem;transform:translateY(80px);transition:transform .3s cubic-bezier(.4,0,.2,1);pointer-events:none}
 .toast.show{transform:none}
-.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);
-  border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle}
-@keyframes spin{to{transform:rotate(360deg)}}
-.f-ta{font-family:'Noto Sans Tamil',sans-serif}
-.f-ml{font-family:'Noto Sans Malayalam',sans-serif}
-.f-kn{font-family:'Noto Sans Kannada',sans-serif}
-.f-hi{font-family:'Noto Sans Devanagari',sans-serif}
-.f-en{font-family:'Sora',sans-serif}
-.flex{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.mt{margin-top:14px}.muted{color:var(--muted);font-size:0.84rem}
-.divider{height:1px;background:var(--border);margin:18px 0}
-.empty-state{text-align:center;padding:36px;color:var(--muted)}
+.spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+.f-ta{font-family:'Noto Sans Tamil',sans-serif}.f-ml{font-family:'Noto Sans Malayalam',sans-serif}
+.f-kn{font-family:'Noto Sans Kannada',sans-serif}.f-hi{font-family:'Noto Sans Devanagari',sans-serif}.f-en{font-family:'Sora',sans-serif}
+.flex{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.mt{margin-top:12px}.muted{color:var(--muted);font-size:.83rem}
+.divider{height:1px;background:var(--border);margin:16px 0}
+.empty{text-align:center;padding:32px;color:var(--muted)}
+code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-radius:5px;font-family:monospace;font-size:.85em}
 @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
-@media(max-width:580px){
-  .t-nav{padding:12px 14px;flex-direction:column;gap:9px}
-  .t-body{padding:18px 14px}
-  .stu-row{grid-template-columns:1fr}
-  .info-grid{grid-template-columns:1fr}
-  .lc-grid{grid-template-columns:1fr}
-  .stab{padding:8px 12px;font-size:0.82rem}
+@media(max-width:560px){
+  .t-nav{padding:11px 13px;flex-direction:column;gap:8px}
+  .t-body{padding:16px 12px}.stu-row{grid-template-columns:1fr}
+  .info-grid{grid-template-columns:1fr}.lc-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════
+<!-- ══════════════════════════════════
      TEACHER VIEW
-══════════════════════════════════════════ -->
+══════════════════════════════════ -->
 <div class="view" id="teacher-view">
-
   <div class="admin-gate" id="admin-gate">
-    <div style="font-size:2.8rem;margin-bottom:10px">🔐</div>
-    <h2 style="font-size:1.8rem;font-weight:800;margin-bottom:6px">Teacher Login</h2>
-    <p class="muted" style="margin-bottom:24px">Enter your password to access the dashboard</p>
+    <div style="font-size:2.6rem;margin-bottom:9px">🔐</div>
+    <h2 style="font-size:1.75rem;font-weight:800;margin-bottom:5px">Teacher Login</h2>
+    <p class="muted" style="margin-bottom:22px">Enter your password to access the dashboard</p>
     <div class="gate-box">
       <label>Password</label>
-      <input type="password" id="admin-pw" placeholder="Enter password"
-        onkeydown="if(event.key==='Enter')adminLogin()"/>
-      <button class="btn btn-accent" style="width:100%;justify-content:center;margin-top:2px"
-        onclick="adminLogin()">Login →</button>
-      <p class="muted" style="margin-top:12px;text-align:center">
-        Default: <strong style="color:var(--accent)">teacher123</strong>
-      </p>
+      <input type="password" id="admin-pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')adminLogin()"/>
+      <button class="btn btn-accent" style="width:100%;justify-content:center;margin-top:2px" onclick="adminLogin()">Login →</button>
+      <p class="muted" style="margin-top:11px;text-align:center">Default: <strong style="color:var(--accent)">teacher123</strong></p>
     </div>
   </div>
 
@@ -209,147 +150,173 @@ tr:hover td{background:rgba(255,255,255,0.02)}
     </div>
 
     <div class="t-body">
-
       <div id="main-setup">
         <div class="stabs">
-          <button class="stab on" onclick="switchTab('csv')">📁 Upload CSV</button>
-          <button class="stab" onclick="switchTab('students')">👥 Students</button>
-          <button class="stab" onclick="switchTab('links')">🔗 Share Links</button>
+          <button class="stab on"  onclick="switchTab('csv')">📁 CSV</button>
+          <button class="stab"     onclick="switchTab('db')">☁ Database</button>
+          <button class="stab"     onclick="switchTab('students')">👥 Students</button>
+          <button class="stab"     onclick="switchTab('links')">🔗 Links</button>
         </div>
 
         <!-- CSV TAB -->
         <div class="spanel on" id="tab-csv">
           <div class="card">
-            <div class="card-title"><span class="icon">📁</span> Upload Questions CSV</div>
-            <div id="csv-status-bar" style="display:none;align-items:center;gap:12px;
-              background:rgba(0,212,170,0.08);border:1.5px solid var(--green);
-              border-radius:10px;padding:12px 15px;margin-bottom:14px;">
-              <span style="font-size:1.4rem">✅</span>
+            <div class="card-title"><span class="ico">📁</span>Upload Questions CSV</div>
+            <div id="csv-ok" style="display:none;align-items:center;gap:11px;background:rgba(0,212,170,.08);border:1.5px solid var(--green);border-radius:9px;padding:11px 14px;margin-bottom:13px">
+              <span style="font-size:1.3rem">✅</span>
               <div style="flex:1">
-                <div style="font-weight:700;color:var(--green)" id="csv-status-text">Questions loaded</div>
-                <div class="muted" id="csv-status-sub">Go to Students tab next</div>
+                <div style="font-weight:700;color:var(--green)" id="csv-ok-txt">Questions loaded</div>
+                <div class="muted" id="csv-ok-sub">Go to ☁ Database tab next</div>
               </div>
-              <button class="btn btn-ghost btn-sm" onclick="clearCSV()">🗑 Clear</button>
+              <button class="btn btn-ghost btn-sm" onclick="clearCSV()">🗑</button>
             </div>
             <div class="upload-zone" id="drop-zone"
-                ondragover="event.preventDefault();this.classList.add('drag')"
-                ondragleave="this.classList.remove('drag')"
-                ondrop="handleDrop(event)">
-              <input type="file" id="csv-file" accept=".csv"
-                onchange="handleCSV(this.files[0])" style="display:none">
-              <div class="upload-icon">📄</div>
-              <h3 style="margin-bottom:6px">Click or drag your CSV file here</h3>
-              <p class="muted">question, option_a, option_b, option_c, option_d, correct_answer</p>
-              <p style="margin-top:5px;color:var(--accent);font-size:0.83rem">correct_answer = A, B, C or D</p>
-              <button class="btn btn-accent btn-sm" style="margin-top:14px"
+              ondragover="event.preventDefault();this.classList.add('drag')"
+              ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+              <input type="file" id="csv-file" accept=".csv" onchange="handleCSV(this.files[0])" style="display:none">
+              <div style="font-size:2rem;margin-bottom:8px">📄</div>
+              <h3 style="margin-bottom:5px">Click or drag CSV file here</h3>
+              <p class="muted" style="font-size:.82rem">question, option_a, option_b, option_c, option_d, correct_answer</p>
+              <p style="margin-top:4px;color:var(--accent);font-size:.8rem">correct_answer = A, B, C or D</p>
+              <button class="btn btn-accent btn-sm" style="margin-top:12px"
                 onclick="event.stopPropagation();document.getElementById('csv-file').click()">📂 Browse File</button>
             </div>
             <div class="divider"></div>
-            <div class="card-title" style="margin-bottom:8px"><span class="icon">📝</span> CSV Format Example</div>
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;
-              padding:12px;font-family:monospace;font-size:0.78rem;color:var(--muted);
-              line-height:1.9;overflow-x:auto;white-space:nowrap">
+            <p style="font-size:.79rem;color:var(--muted);font-weight:600;margin-bottom:6px">CSV FORMAT</p>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px;font-family:monospace;font-size:.76rem;color:var(--muted);line-height:1.85;overflow-x:auto;white-space:nowrap">
               question,option_a,option_b,option_c,option_d,correct_answer<br>
               What is the capital of India?,Mumbai,New Delhi,Kolkata,Chennai,B<br>
               How many days in a week?,5,6,7,8,C<br>
-              Planet closest to Sun?,Earth,Mars,Venus,Mercury,D<br>
-              What is 12x12?,124,144,134,154,B<br>
-              Who wrote Romeo and Juliet?,Dickens,Twain,Shakespeare,Austen,C
+              Planet closest to Sun?,Earth,Mars,Venus,Mercury,D
             </div>
-            <button class="btn btn-ghost btn-sm mt" onclick="loadSampleCSV()">⚡ Load Sample Data</button>
+            <button class="btn btn-ghost btn-sm mt" onclick="loadSample()">⚡ Load Sample</button>
           </div>
           <div id="csv-preview" style="display:none">
             <div class="card">
-              <div class="card-title"><span class="icon">✅</span>
-                Questions Preview — <span id="q-count">0</span> loaded</div>
+              <div class="card-title"><span class="ico">✅</span><span id="q-count-lbl">0 Questions</span></div>
               <div class="preview-wrap">
-                <table>
-                  <thead><tr><th>#</th><th>Question</th><th>A</th><th>B</th><th>C</th><th>D</th><th>Answer</th></tr></thead>
-                  <tbody id="q-preview-body"></tbody>
-                </table>
+                <table><thead><tr><th>#</th><th>Question</th><th>A</th><th>B</th><th>C</th><th>D</th><th>Ans</th></tr></thead>
+                <tbody id="q-tbody"></tbody></table>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- DATABASE TAB -->
+        <div class="spanel" id="tab-db">
+          <div class="card">
+            <div class="card-title"><span class="ico">☁</span>Free Database — Firebase Setup</div>
+            <p class="muted" style="margin-bottom:16px">This stores student answers in the cloud so you can see them on your laptop even when students submit from their phones. <strong style="color:var(--text)">One-time setup, free forever, no credit card.</strong></p>
+
+            <div style="background:rgba(108,99,255,.08);border:1.5px solid var(--accent);border-radius:11px;padding:16px;margin-bottom:16px">
+              <div class="step-box">
+                <div class="step-num">1</div>
+                <div>
+                  <p style="font-weight:700;font-size:.88rem;margin-bottom:3px">Create Firebase project</p>
+                  <p class="muted" style="font-size:.8rem">Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent)">console.firebase.google.com</a> → Add project → Give any name → Continue → Continue → Create project</p>
+                  <button class="btn btn-accent btn-sm mt" onclick="window.open('https://console.firebase.google.com','_blank')">🔗 Open Firebase</button>
+                </div>
+              </div>
+              <div class="step-box">
+                <div class="step-num">2</div>
+                <div>
+                  <p style="font-weight:700;font-size:.88rem;margin-bottom:3px">Enable Realtime Database</p>
+                  <p class="muted" style="font-size:.8rem">In your project → left sidebar → <strong>Build</strong> → <strong>Realtime Database</strong> → Create database → choose any location → <strong>Start in test mode</strong> → Enable</p>
+                </div>
+              </div>
+              <div class="step-box">
+                <div class="step-num">3</div>
+                <div>
+                  <p style="font-weight:700;font-size:.88rem;margin-bottom:3px">Copy your Database URL</p>
+                  <p class="muted" style="font-size:.8rem">After enabling, you'll see a URL like:<br><code>https://your-project-default-rtdb.firebaseio.com</code><br>Copy that entire URL.</p>
+                </div>
+              </div>
+              <div class="step-box" style="margin-bottom:0">
+                <div class="step-num">4</div>
+                <div>
+                  <p style="font-weight:700;font-size:.88rem;margin-bottom:3px">Paste it below and Save</p>
+                </div>
+              </div>
+            </div>
+
+            <label>Firebase Database URL</label>
+            <div class="flex" style="align-items:center">
+              <input type="text" id="fb-url" placeholder="https://your-project-default-rtdb.firebaseio.com" style="margin:0;flex:1"/>
+              <button class="btn btn-green btn-sm" onclick="saveDB()" style="margin-left:8px">✅ Save & Test</button>
+            </div>
+            <div id="db-status" style="margin-top:10px;font-size:.84rem"></div>
           </div>
         </div>
 
         <!-- STUDENTS TAB -->
         <div class="spanel" id="tab-students">
           <div class="card">
-            <div class="card-title"><span class="icon">👥</span> Students & Languages</div>
+            <div class="card-title"><span class="ico">👥</span>Students & Languages</div>
             <div id="student-list"></div>
-            <button class="btn btn-ghost btn-sm mt" onclick="addStudentRow()">+ Add Student</button>
+            <button class="btn btn-ghost btn-sm mt" onclick="addRow()">+ Add Student</button>
           </div>
         </div>
 
         <!-- LINKS TAB -->
         <div class="spanel" id="tab-links">
           <div class="card">
-            <div class="card-title"><span class="icon">🌐</span> Step 1 — Your Hosted Website URL</div>
-            <div style="background:rgba(255,209,102,0.07);border:1px solid rgba(255,209,102,0.25);
-              border-radius:9px;padding:12px 14px;margin-bottom:16px;">
-              <p style="color:var(--yellow);font-weight:700;font-size:0.88rem">⚠️ Must be hosted online — local file:// links don't work on phones</p>
-              <p class="muted" style="margin-top:4px;font-size:0.8rem">Upload this file to a free host, then paste your URL below.</p>
+            <div class="card-title"><span class="ico">🌐</span>Your Hosted Website URL</div>
+            <div style="background:rgba(255,209,102,.07);border:1px solid rgba(255,209,102,.25);border-radius:8px;padding:10px 13px;margin-bottom:14px">
+              <p style="color:var(--yellow);font-weight:700;font-size:.86rem">⚠️ Must be hosted online — local file:// links don't work on phones</p>
             </div>
             <div class="host-opts">
               <div class="host-opt" onclick="window.open('https://netlify.com/drop','_blank')">
-                <div style="font-size:1.6rem">🟢</div><div class="ho-name">Netlify Drop</div>
-                <div class="ho-desc">Drag & drop. 30 sec.</div><div class="ho-url">netlify.com/drop</div>
+                <div style="font-size:1.4rem">🟢</div><div style="font-weight:700;font-size:.87rem;margin:4px 0 2px">Netlify Drop</div>
+                <div class="muted" style="font-size:.73rem">Drag & drop. 30 sec.</div>
               </div>
               <div class="host-opt" onclick="window.open('https://tiiny.host','_blank')">
-                <div style="font-size:1.6rem">🔵</div><div class="ho-name">Tiiny.host</div>
-                <div class="ho-desc">Upload HTML, instant link.</div><div class="ho-url">tiiny.host</div>
+                <div style="font-size:1.4rem">🔵</div><div style="font-weight:700;font-size:.87rem;margin:4px 0 2px">Tiiny.host</div>
+                <div class="muted" style="font-size:.73rem">Upload HTML, instant.</div>
               </div>
               <div class="host-opt" onclick="window.open('https://pages.github.com','_blank')">
-                <div style="font-size:1.6rem">⚫</div><div class="ho-name">GitHub Pages</div>
-                <div class="ho-desc">Free permanent URL.</div><div class="ho-url">pages.github.com</div>
+                <div style="font-size:1.4rem">⚫</div><div style="font-weight:700;font-size:.87rem;margin:4px 0 2px">GitHub Pages</div>
+                <div class="muted" style="font-size:.73rem">Free permanent URL.</div>
               </div>
             </div>
-            <label>📌 Paste Your Hosted URL</label>
+            <label>Paste Your Hosted URL</label>
             <div class="flex" style="align-items:center">
-              <input type="text" id="hosted-url" placeholder="https://your-site.netlify.app"
-                style="margin:0;flex:1" oninput="checkUrl()"/>
-              <button class="btn btn-green btn-sm" onclick="saveHostedUrl()">✅ Save</button>
+              <input type="text" id="hosted-url" placeholder="https://your-site.netlify.app" style="margin:0;flex:1" oninput="checkUrl()"/>
+              <button class="btn btn-green btn-sm" onclick="saveUrl()">✅ Save</button>
             </div>
-            <p id="url-warn" style="color:var(--accent2);font-size:0.78rem;margin-top:5px;display:none">
-              ⚠️ Looks like a local path — students on phones cannot open this!
-            </p>
+            <p id="url-warn" style="color:var(--accent2);font-size:.77rem;margin-top:4px;display:none">⚠️ Looks like a local path!</p>
           </div>
           <div class="card">
-            <div class="card-title"><span class="icon">🔗</span> Step 2 — Generate & Share Student Links</div>
-            <p class="muted" style="margin-bottom:14px">
-              Questions are encoded inside each link. Students tap → answer → submit.
-              Results appear instantly in your <strong style="color:var(--text)">📊 Results</strong> tab.
-            </p>
-            <button class="btn btn-accent" onclick="generateLinks()">⚡ Generate Student Links</button>
-            <div id="links-container" class="mt"></div>
+            <div class="card-title"><span class="ico">🔗</span>Generate Student Links</div>
+            <p class="muted" style="margin-bottom:12px">Quiz questions + database connection are encoded inside each link. Students tap → answer → submit → results appear instantly in your dashboard.</p>
+            <button class="btn btn-accent" onclick="generateLinks()">⚡ Generate Links</button>
+            <div id="links-out" class="mt"></div>
           </div>
         </div>
       </div>
 
-      <!-- RESULTS PANEL -->
+      <!-- RESULTS -->
       <div id="main-results" style="display:none">
-        <div class="flex" style="justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+        <div class="flex" style="justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:9px">
           <div>
-            <h2 style="font-size:1.45rem;font-weight:800">Results Dashboard</h2>
-            <p class="muted" id="results-subtitle">Submitted answers from students</p>
+            <h2 style="font-size:1.4rem;font-weight:800">Results Dashboard</h2>
+            <p class="muted" id="res-sub">Submitted answers from students</p>
           </div>
           <div class="flex">
-            <button class="btn btn-ghost btn-sm" onclick="refreshResults()">🔄 Refresh</button>
-            <button class="btn btn-green btn-sm" onclick="downloadCSV()">⬇ CSV</button>
-            <button class="btn btn-yellow btn-sm" onclick="downloadExcel()">⬇ Excel</button>
+            <button class="btn btn-ghost btn-sm" onclick="loadResults()">🔄 Refresh</button>
+            <button class="btn btn-green btn-sm" onclick="dlCSV()">⬇ CSV</button>
+            <button class="btn btn-yellow btn-sm" onclick="dlXLS()">⬇ Excel</button>
             <button class="btn btn-danger btn-sm" onclick="clearResults()">🗑 Clear</button>
           </div>
         </div>
-        <div class="card"><div id="results-body"></div></div>
+        <div class="card"><div id="res-body"></div></div>
       </div>
-
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
+<!-- ══════════════════════════════════
      STUDENT VIEW
-══════════════════════════════════════════ -->
+══════════════════════════════════ -->
 <div class="view" id="student-view">
   <div class="quiz-shell">
     <div class="quiz-topbar">
@@ -358,28 +325,21 @@ tr:hover td{background:rgba(255,255,255,0.02)}
     </div>
     <div id="name-entry" style="display:none">
       <div class="card">
-        <div class="card-title"><span class="icon">👤</span><span id="lbl-details">Enter your details</span></div>
+        <div class="card-title"><span class="ico">👤</span><span id="lbl-det">Enter your details</span></div>
         <div class="info-grid">
-          <div><label id="lbl-name">Your Name</label>
-            <input type="text" id="s-name" placeholder="Full name"/></div>
-          <div><label id="lbl-email">Email (optional)</label>
-            <input type="email" id="s-email" placeholder="your@email.com"/></div>
+          <div><label id="lbl-name">Your Name</label><input type="text" id="s-name" placeholder="Full name"/></div>
+          <div><label id="lbl-email">Email (optional)</label><input type="email" id="s-email" placeholder="your@email.com"/></div>
         </div>
-        <button class="btn btn-accent" onclick="startQuiz()"
-          style="width:100%;justify-content:center">Start Quiz →</button>
+        <button class="btn btn-accent" onclick="startQuiz()" style="width:100%;justify-content:center">Start Quiz →</button>
       </div>
     </div>
     <div id="quiz-area" style="display:none">
-      <div class="prog-label">
-        <span id="prog-text">Question 0 of 5</span>
-        <span id="prog-pct">0%</span>
-      </div>
-      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-      <div id="questions-container"></div>
-      <div class="mt" style="padding-bottom:32px">
-        <button class="btn btn-accent" id="submit-btn" onclick="submitQuiz()"
-          style="width:100%;justify-content:center;font-size:1rem;padding:14px">
-          ✅ <span id="submit-label">Submit Answers</span>
+      <div class="pl"><span id="prog-txt">Q 0 of 5</span><span id="prog-pct">0%</span></div>
+      <div class="pb"><div class="pf" id="prog-bar" style="width:0%"></div></div>
+      <div id="q-container"></div>
+      <div class="mt" style="padding-bottom:28px">
+        <button class="btn btn-accent" id="sub-btn" onclick="submitQuiz()" style="width:100%;justify-content:center;font-size:.97rem;padding:13px">
+          ✅ <span id="sub-lbl">Submit Answers</span>
         </button>
       </div>
     </div>
@@ -390,17 +350,13 @@ tr:hover td{background:rgba(255,255,255,0.02)}
 <div class="toast" id="toast"></div>
 
 <script>
-// ════════════════════════════════════════════
+// ══════════════════════
 // CONFIG
-// ════════════════════════════════════════════
-const ADMIN_PASS  = 'teacher123';
-const LKEY        = 'qb_v5';          // teacher localStorage
-const SKEY_PFX    = 'qb_sub5_';       // student submission key prefix (localStorage)
-const SH_PFX      = 'qbsub:';         // shared storage prefix
+// ══════════════════════
+const ADMIN_PASS = 'teacher123';
+const LS_KEY     = 'qb7';
+const DONE_PFX   = 'qb7done_';
 
-// ════════════════════════════════════════════
-// LANGUAGE DEFINITIONS
-// ════════════════════════════════════════════
 const LANGS = {
   en:{name:'English',  flag:'🇬🇧',cls:'f-en',chip:'chip-en'},
   ta:{name:'Tamil',    flag:'🇮🇳',cls:'f-ta',chip:'chip-ta'},
@@ -408,219 +364,238 @@ const LANGS = {
   kn:{name:'Kannada',  flag:'🇮🇳',cls:'f-kn',chip:'chip-kn'},
   hi:{name:'Hindi',    flag:'🇮🇳',cls:'f-hi',chip:'chip-hi'}
 };
-const LANG_OPT = Object.entries(LANGS)
-  .map(([k,v])=>`<option value="${k}">${v.flag} ${v.name}</option>`).join('');
-
-const I18N = {
-  en:{quiz:'Quiz',q:'Question',of:'of',submit:'Submit Answers',
-      name:'Your Name',email:'Email (optional)',details:'Enter Your Details',review:'Your Answers'},
-  ta:{quiz:'வினாடி வினா',q:'கேள்வி',of:'இல்',submit:'பதில்களை சமர்ப்பிக்கவும்',
-      name:'உங்கள் பெயர்',email:'மின்னஞ்சல் (விருப்பமானது)',details:'விவரங்களை உள்ளிடவும்',review:'உங்கள் பதில்கள்'},
-  ml:{quiz:'ക്വിസ്',q:'ചോദ്യം',of:'ൽ',submit:'ഉത്തരങ്ങൾ സമർപ്പിക്കുക',
-      name:'നിങ്ങളുടെ പേര്',email:'ഇമെയിൽ (ഐച്ഛിക)',details:'വിവരങ്ങൾ നൽകുക',review:'നിങ്ങളുടെ ഉത്തരങ്ങൾ'},
-  kn:{quiz:'ಕ್ವಿಜ್',q:'ಪ್ರಶ್ನೆ',of:'ರಲ್ಲಿ',submit:'ಉತ್ತರಗಳನ್ನು ಸಲ್ಲಿಸಿ',
-      name:'ನಿಮ್ಮ ಹೆಸರು',email:'ಇಮೇಲ್ (ಐಚ್ಛಿಕ)',details:'ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ',review:'ನಿಮ್ಮ ಉತ್ತರಗಳು'},
-  hi:{quiz:'प्रश्नोत्तरी',q:'प्रश्न',of:'में से',submit:'उत्तर जमा करें',
-      name:'आपका नाम',email:'ईमेल (वैकल्पिक)',details:'जानकारी दर्ज करें',review:'आपके उत्तर'}
+const LOPT = Object.entries(LANGS).map(([k,v])=>`<option value="${k}">${v.flag} ${v.name}</option>`).join('');
+const I18 = {
+  en:{q:'Q',of:'of',sub:'Submit Answers',name:'Your Name',email:'Email (optional)',det:'Enter Your Details',rev:'Your Answers'},
+  ta:{q:'கேள்வி',of:'இல்',sub:'பதில்களை சமர்ப்பிக்கவும்',name:'உங்கள் பெயர்',email:'மின்னஞ்சல்',det:'விவரங்களை உள்ளிடவும்',rev:'உங்கள் பதில்கள்'},
+  ml:{q:'ചോ',of:'ൽ',sub:'ഉത്തരങ്ങൾ സമർപ്പിക്കുക',name:'പേര്',email:'ഇമെയിൽ',det:'വിവരങ്ങൾ നൽകുക',rev:'ഉത്തരങ്ങൾ'},
+  kn:{q:'ಪ್ರ',of:'ರಲ್ಲಿ',sub:'ಉತ್ತರಗಳನ್ನು ಸಲ್ಲಿಸಿ',name:'ಹೆಸರು',email:'ಇಮೇಲ್',det:'ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ',rev:'ನಿಮ್ಮ ಉತ್ತರಗಳು'},
+  hi:{q:'प्र',of:'में से',sub:'उत्तर जमा करें',name:'नाम',email:'ईमेल',det:'जानकारी दर्ज करें',rev:'आपके उत्तर'}
 };
-
-// Sample translations
 const TR = {
-  ta:{"What is the capital of India?":"இந்தியாவின் தலைநகரம் என்ன?","Mumbai":"மும்பை","New Delhi":"புது டெல்லி","Kolkata":"கொல்கத்தா","Chennai":"சென்னை","How many days in a week?":"ஒரு வாரத்தில் எத்தனை நாட்கள்?","Planet closest to Sun?":"சூரியனுக்கு மிக அருகில் உள்ள கோள்?","Earth":"பூமி","Mars":"செவ்வாய்","Venus":"வெள்ளி","Mercury":"புதன்","What is 12x12?":"12 × 12 என்ன?","Who wrote Romeo and Juliet?":"ரோமியோ ஜூலியட்டை யார் எழுதினார்?","Dickens":"டிக்கன்ஸ்","Twain":"ட்வைன்","Shakespeare":"ஷேக்ஸ்பியர்","Austen":"ஆஸ்டன்"},
-  ml:{"What is the capital of India?":"ഇന്ത്യയുടെ തലസ്ഥാനം ഏതാണ്?","Mumbai":"മുംബൈ","New Delhi":"ന്യൂ ഡൽഹി","Kolkata":"കൊൽക്കത്ത","Chennai":"ചെന്നൈ","How many days in a week?":"ഒരാഴ്ചയിൽ എത്ര ദിവസം?","Planet closest to Sun?":"സൂര്യനോട് ഏറ്റവും അടുത്ത ഗ്രഹം?","Earth":"ഭൂമി","Mars":"ചൊവ്വ","Venus":"ശുക്രൻ","Mercury":"ബുധൻ","What is 12x12?":"12 × 12 എന്ത്?","Who wrote Romeo and Juliet?":"റോമിയോ ജൂലിയറ്റ് ആരെഴുതി?","Dickens":"ഡിക്കൻസ്","Twain":"ട്വൈൻ","Shakespeare":"ഷേക്‌സ്പിയർ","Austen":"ഓസ്റ്റൻ"},
-  kn:{"What is the capital of India?":"ಭಾರತದ ರಾಜಧಾನಿ ಯಾವುದು?","Mumbai":"ಮುಂಬೈ","New Delhi":"ನವ ದೆಹಲಿ","Kolkata":"ಕೋಲ್ಕತ್ತಾ","Chennai":"ಚೆನ್ನೈ","How many days in a week?":"ಒಂದು ವಾರದಲ್ಲಿ ಎಷ್ಟು ದಿನ?","Planet closest to Sun?":"ಸೂರ್ಯನಿಗೆ ಹತ್ತಿರದ ಗ್ರಹ?","Earth":"ಭೂಮಿ","Mars":"ಮಂಗಳ","Venus":"ಶುಕ್ರ","Mercury":"ಬುಧ","What is 12x12?":"12 × 12 ಎಷ್ಟು?","Who wrote Romeo and Juliet?":"ರೋಮಿಯೋ ಜೂಲಿಯಟ್ ಬರೆದವರು?","Dickens":"ಡಿಕನ್ಸ್","Twain":"ಟ್ವೈನ್","Shakespeare":"ಷೇಕ್ಸ್‌ಪಿಯರ್","Austen":"ಆಸ್ಟನ್"},
-  hi:{"What is the capital of India?":"भारत की राजधानी क्या है?","Mumbai":"मुंबई","New Delhi":"नई दिल्ली","Kolkata":"कोलकाता","Chennai":"चेन्नई","How many days in a week?":"एक सप्ताह में कितने दिन?","Planet closest to Sun?":"सूर्य के सबसे नजदीक ग्रह?","Earth":"पृथ्वी","Mars":"मंगल","Venus":"शुक्र","Mercury":"बुध","What is 12x12?":"12 × 12 क्या है?","Who wrote Romeo and Juliet?":"रोमियो जूलियट किसने लिखी?","Dickens":"डिकन्स","Twain":"ट्वेन","Shakespeare":"शेक्सपियर","Austen":"ऑस्टन"},
+  ta:{"What is the capital of India?":"இந்தியாவின் தலைநகரம்?","Mumbai":"மும்பை","New Delhi":"புது டெல்லி","Kolkata":"கொல்கத்தா","Chennai":"சென்னை","How many days in a week?":"வாரத்தில் நாட்கள்?","Planet closest to Sun?":"சூரியனுக்கு அருகில்?","Earth":"பூமி","Mars":"செவ்வாய்","Venus":"வெள்ளி","Mercury":"புதன்","What is 12x12?":"12×12?","Who wrote Romeo and Juliet?":"ரோமியோ ஜூலியட் யார்?","Dickens":"டிக்கன்ஸ்","Twain":"ட்வைன்","Shakespeare":"ஷேக்ஸ்பியர்","Austen":"ஆஸ்டன்"},
+  ml:{"What is the capital of India?":"ഇന്ത്യയുടെ തലസ്ഥാനം?","Mumbai":"മുംബൈ","New Delhi":"ന്യൂ ഡൽഹി","Kolkata":"കൊൽക്കത്ത","Chennai":"ചെന്നൈ","How many days in a week?":"ആഴ്ചയിൽ ദിവസങ്ങൾ?","Planet closest to Sun?":"സൂര്യനോടടുത്ത ഗ്രഹം?","Earth":"ഭൂമി","Mars":"ചൊവ്വ","Venus":"ശുക്രൻ","Mercury":"ബുധൻ","What is 12x12?":"12×12?","Who wrote Romeo and Juliet?":"റോമിയോ ജൂലിയറ്റ്?","Dickens":"ഡിക്കൻസ്","Twain":"ട്വൈൻ","Shakespeare":"ഷേക്‌സ്പിയർ","Austen":"ഓസ്റ്റൻ"},
+  kn:{"What is the capital of India?":"ಭಾರತದ ರಾಜಧಾನಿ?","Mumbai":"ಮುಂಬೈ","New Delhi":"ನವ ದೆಹಲಿ","Kolkata":"ಕೋಲ್ಕತ್ತಾ","Chennai":"ಚೆನ್ನೈ","How many days in a week?":"ವಾರದಲ್ಲಿ ದಿನಗಳು?","Planet closest to Sun?":"ಸೂರ್ಯನಿಗೆ ಹತ್ತಿರ?","Earth":"ಭೂಮಿ","Mars":"ಮಂಗಳ","Venus":"ಶುಕ್ರ","Mercury":"ಬುಧ","What is 12x12?":"12×12?","Who wrote Romeo and Juliet?":"ರೋಮಿಯೋ ಜೂಲಿಯಟ್?","Dickens":"ಡಿಕನ್ಸ್","Twain":"ಟ್ವೈನ್","Shakespeare":"ಷೇಕ್ಸ್‌ಪಿಯರ್","Austen":"ಆಸ್ಟನ್"},
+  hi:{"What is the capital of India?":"भारत की राजधानी?","Mumbai":"मुंबई","New Delhi":"नई दिल्ली","Kolkata":"कोलकाता","Chennai":"चेन्नई","How many days in a week?":"सप्ताह में दिन?","Planet closest to Sun?":"सूर्य के नजदीक ग्रह?","Earth":"पृथ्वी","Mars":"मंगल","Venus":"शुक्र","Mercury":"बुध","What is 12x12?":"12×12?","Who wrote Romeo and Juliet?":"रोमियो जूलियट?","Dickens":"डिकन्स","Twain":"ट्वेन","Shakespeare":"शेक्सपियर","Austen":"ऑस्टन"},
   en:{}
 };
-function tr(t,l){ return (l!=='en'&&TR[l]&&TR[l][t])||t; }
+function tr(x,l){return(l!=='en'&&TR[l]&&TR[l][x])||x;}
 
-// ════════════════════════════════════════════
-// TEACHER STATE (localStorage on teacher device)
-// ════════════════════════════════════════════
-let state = { questions:[], quizIndex:{} };
-function loadLocalState(){
+// ══════════════════════
+// FIREBASE REST API
+// No SDK needed — just plain fetch to the REST endpoint
+// ══════════════════════
+let FB_URL = ''; // e.g. https://project-rtdb.firebaseio.com
+
+function fbPath(){ return FB_URL.replace(/\/$/,'') + '/quizresults.json'; }
+
+async function fbRead(){
   try{
-    const d=JSON.parse(localStorage.getItem(LKEY)||'{}');
-    if(d.questions)  state.questions  = d.questions;
-    if(d.quizIndex)  state.quizIndex  = d.quizIndex;
+    const r = await fetch(fbPath());
+    if(!r.ok) return [];
+    const data = await r.json();
+    if(!data) return [];
+    // Firebase returns object with keys, convert to array
+    return Object.values(data);
+  }catch(e){ console.error('fbRead',e); return []; }
+}
+
+async function fbPush(sub){
+  // Firebase POST creates a unique key automatically
+  try{
+    const r = await fetch(fbPath(), {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(sub)
+    });
+    return r.ok;
+  }catch(e){ console.error('fbPush',e); return false; }
+}
+
+async function fbClear(){
+  try{
+    await fetch(fbPath(), {method:'DELETE'});
+    return true;
+  }catch(e){ return false; }
+}
+
+// ══════════════════════
+// LOCAL STATE
+// ══════════════════════
+let ST = {questions:[]};
+function loadLS(){
+  try{
+    const d = JSON.parse(localStorage.getItem(LS_KEY)||'{}');
+    if(d.questions) ST.questions = d.questions;
+    FB_URL = localStorage.getItem('qb7_fburl') || '';
   }catch(e){}
 }
-function saveLocalState(){ try{ localStorage.setItem(LKEY,JSON.stringify(state)); }catch(e){} }
-loadLocalState();
+function saveLS(){ try{localStorage.setItem(LS_KEY, JSON.stringify(ST));}catch(e){} }
+loadLS();
 
-// ════════════════════════════════════════════
-// SHARED STORAGE  — student writes, teacher reads
-// window.storage is available when running as a Claude artifact.
-// When running on GitHub Pages / Netlify, we fall back to
-// localStorage so the app still works (same-device demo mode).
-// ════════════════════════════════════════════
-const _mem={};  // in-memory fallback
-async function shSet(key,val){
-  try{ if(window.storage){ await window.storage.set(key,JSON.stringify(val),true); return; } }catch(e){}
-  try{ localStorage.setItem('sh_'+key,JSON.stringify(val)); }catch(e){}
-  _mem[key]=val;
+// ══════════════════════
+// ENCODE / DECODE
+// Quiz data + Firebase URL travel inside the link
+// ══════════════════════
+function encQ(name, lang, qs, qid, fbUrl){
+  const p = {n:name, l:lang, q:qs, id:qid, f:fbUrl};
+  return btoa(unescape(encodeURIComponent(JSON.stringify(p))));
 }
-async function shGet(key){
-  try{ if(window.storage){ const r=await window.storage.get(key,true); return r?JSON.parse(r.value):null; } }catch(e){}
-  try{ const v=localStorage.getItem('sh_'+key); if(v) return JSON.parse(v); }catch(e){}
-  return _mem[key]||null;
-}
-async function shList(pfx){
-  try{ if(window.storage){ const r=await window.storage.list(pfx,true); return r?r.keys:[]; } }catch(e){}
-  const keys=[];
-  try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.startsWith('sh_'+pfx)) keys.push(k.slice(3)); } }catch(e){}
-  return [...keys,...Object.keys(_mem).filter(k=>k.startsWith(pfx))].filter((v,i,a)=>a.indexOf(v)===i);
-}
-async function shDel(key){
-  try{ if(window.storage){ await window.storage.delete(key,true); } }catch(e){}
-  try{ localStorage.removeItem('sh_'+key); }catch(e){}
-  delete _mem[key];
-}
-
-// ════════════════════════════════════════════
-// ENCODE / DECODE  (quiz data lives in the URL)
-// ════════════════════════════════════════════
-function encodeQuiz(name,lang,questions,qid){
-  return btoa(unescape(encodeURIComponent(JSON.stringify({n:name,l:lang,q:questions,id:qid}))));
-}
-function decodeQuiz(enc){
+function decQ(s){
   try{
-    const d=JSON.parse(decodeURIComponent(escape(atob(enc))));
-    return {name:d.n,lang:d.l,questions:d.q,qid:d.id||enc.substring(0,20)};
-  }catch(e){return null;}
+    const d = JSON.parse(decodeURIComponent(escape(atob(s))));
+    return {name:d.n, lang:d.l, qs:d.q, qid:d.id, fbUrl:d.f||''};
+  }catch(e){ return null; }
 }
 
-// ════════════════════════════════════════════
+// ══════════════════════
 // ROUTING
-// ════════════════════════════════════════════
+// ══════════════════════
 function route(){
-  const code=new URLSearchParams(location.search).get('quiz');
+  const code = new URLSearchParams(location.search).get('quiz');
   if(code){
-    document.getElementById('teacher-view').style.display='none';
-    const sv=document.getElementById('student-view');
-    sv.style.display='flex'; sv.classList.add('on');
-    initStudentQuiz(code);
+    document.getElementById('teacher-view').style.display = 'none';
+    const sv = document.getElementById('student-view');
+    sv.style.display = 'flex'; sv.classList.add('on');
+    initStudent(code);
   } else {
     document.getElementById('teacher-view').classList.add('on');
   }
 }
 
-// ════════════════════════════════════════════
-// ADMIN AUTH
-// ════════════════════════════════════════════
+// ══════════════════════
+// ADMIN
+// ══════════════════════
 function adminLogin(){
-  const pw=document.getElementById('admin-pw').value;
-  if(pw===ADMIN_PASS){
-    document.getElementById('admin-gate').style.display='none';
-    document.getElementById('dashboard').style.display='flex';
-    buildStudentList();
-    if(state.questions.length){ showCSVPreview(); updateUploadZone(state.questions.length); }
-    const u=localStorage.getItem('qb_hosted_url')||'';
-    if(u){const i=document.getElementById('hosted-url');if(i)i.value=u;}
+  const pw = document.getElementById('admin-pw').value;
+  if(pw === ADMIN_PASS){
+    document.getElementById('admin-gate').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    buildStudents();
+    if(ST.questions.length){ showPreview(); updateZone(ST.questions.length); }
+    const u = localStorage.getItem('qb_url')||'';
+    if(u){ const i=document.getElementById('hosted-url'); if(i) i.value=u; }
+    const f = localStorage.getItem('qb7_fburl')||'';
+    if(f){ const i=document.getElementById('fb-url'); if(i) i.value=f; document.getElementById('db-status').innerHTML='<span style="color:var(--green);font-weight:700">✅ Database connected</span>'; }
   } else {
-    const el=document.getElementById('admin-pw');
-    el.style.animation='shake 0.4s ease';
-    el.addEventListener('animationend',()=>el.style.animation='',{once:true});
+    const el = document.getElementById('admin-pw');
+    el.style.animation = 'shake .4s ease';
+    el.addEventListener('animationend', ()=>el.style.animation='', {once:true});
     toast('Wrong password!','#ff6584');
   }
 }
 function adminLogout(){
-  document.getElementById('admin-gate').style.display='flex';
-  document.getElementById('dashboard').style.display='none';
-  document.getElementById('admin-pw').value='';
+  document.getElementById('admin-gate').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('admin-pw').value = '';
 }
 
-// ════════════════════════════════════════════
-// TAB SWITCHING
-// ════════════════════════════════════════════
-const TABS=['csv','students','links'];
+// ══════════════════════
+// TABS
+// ══════════════════════
+const TABS = ['csv','db','students','links'];
 function switchTab(id){
   TABS.forEach((t,i)=>{
-    document.querySelectorAll('.stab')[i]?.classList.toggle('on',t===id);
-    document.getElementById(`tab-${t}`)?.classList.toggle('on',t===id);
+    document.querySelectorAll('.stab')[i]?.classList.toggle('on', t===id);
+    document.getElementById('tab-'+t)?.classList.toggle('on', t===id);
   });
 }
 function switchMain(id){
   document.querySelectorAll('.npbtn').forEach((b,i)=>b.classList.toggle('on',['setup','results'][i]===id));
-  document.getElementById('main-setup').style.display=id==='setup'?'block':'none';
-  document.getElementById('main-results').style.display=id==='results'?'block':'none';
-  if(id==='results') loadAndRenderResults();
+  document.getElementById('main-setup').style.display = id==='setup'?'block':'none';
+  document.getElementById('main-results').style.display = id==='results'?'block':'none';
+  if(id==='results') loadResults();
 }
 
-// ════════════════════════════════════════════
-// CSV HANDLING
-// ════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded',()=>{
-  const dz=document.getElementById('drop-zone');
-  if(dz) dz.addEventListener('click',e=>{
+// ══════════════════════
+// DB SAVE & TEST
+// ══════════════════════
+async function saveDB(){
+  const val = document.getElementById('fb-url').value.trim().replace(/\/$/,'');
+  if(!val || !val.startsWith('https://')){
+    toast('Enter a valid Firebase URL (starts with https://)','#ff6584'); return;
+  }
+  const st = document.getElementById('db-status');
+  st.innerHTML = '<span class="spin"></span> Testing...';
+  FB_URL = val;
+  try{
+    // Write a test value then read it back
+    const testSub = {_test: true, t: Date.now()};
+    const wRes = await fetch(val+'/qbtest.json', {
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(testSub)
+    });
+    if(wRes.ok){
+      localStorage.setItem('qb7_fburl', val);
+      st.innerHTML = '<span style="color:var(--green);font-weight:700">✅ Connected! Database is working. Go to 👥 Students tab next.</span>';
+      toast('✅ Firebase connected!');
+    } else {
+      const err = await wRes.text();
+      FB_URL = '';
+      st.innerHTML = `<span style="color:var(--accent2);font-weight:700">❌ Failed (${wRes.status}). Make sure database is in <strong>Test Mode</strong>.</span>`;
+      toast('Connection failed','#ff6584');
+    }
+  }catch(e){
+    FB_URL = '';
+    st.innerHTML = '<span style="color:var(--accent2);font-weight:700">❌ Network error. Check the URL and try again.</span>';
+  }
+}
+
+// ══════════════════════
+// CSV
+// ══════════════════════
+document.addEventListener('DOMContentLoaded', ()=>{
+  const dz = document.getElementById('drop-zone');
+  if(dz) dz.addEventListener('click', e=>{
     if(e.target.tagName==='BUTTON'||e.target.closest('button')) return;
     document.getElementById('csv-file').click();
   });
 });
-function handleDrop(e){
-  e.preventDefault();
-  document.getElementById('drop-zone').classList.remove('drag');
-  const f=e.dataTransfer.files[0]; if(f) handleCSV(f);
-}
-function handleCSV(file){
-  if(!file) return;
-  const r=new FileReader();
-  r.onload=e=>parseCSV(e.target.result);
-  r.readAsText(file);
-}
-function parseCSV(text){
-  const lines=text.trim().split('\n').filter(l=>l.trim());
-  const qs=[];
-  const start=lines[0].toLowerCase().includes('question')||lines[0].toLowerCase().startsWith('q')?1:0;
-  for(let i=start;i<lines.length;i++){
-    const cols=csvParse(lines[i]);
-    if(cols.length<6) continue;
-    const [q,a,b,c,d,ans]=cols.map(s=>s.trim().replace(/^"|"$/g,''));
+function handleDrop(e){ e.preventDefault(); document.getElementById('drop-zone').classList.remove('drag'); const f=e.dataTransfer.files[0]; if(f) handleCSV(f); }
+function handleCSV(file){ if(!file) return; const r=new FileReader(); r.onload=e=>parseCSV(e.target.result); r.readAsText(file); }
+function parseCSV(txt){
+  const lines = txt.trim().split('\n').filter(l=>l.trim());
+  const qs = [];
+  const start = lines[0].toLowerCase().includes('question') ? 1 : 0;
+  for(let i=start; i<lines.length; i++){
+    const cols = csvSplit(lines[i]);
+    if(cols.length < 6) continue;
+    const [q,a,b,c,d,ans] = cols.map(s=>s.trim().replace(/^"|"$/g,''));
     if(!q) continue;
-    qs.push({q,a,b,c,d,correct:ans.toUpperCase().charAt(0)});
+    qs.push({q,a,b,c,d, correct: ans.toUpperCase().charAt(0)});
   }
-  if(!qs.length){ toast('No valid questions found in CSV!','#ff6584'); return; }
-  state.questions=qs;
-  saveLocalState();
+  if(!qs.length){ toast('No valid questions found!','#ff6584'); return; }
+  ST.questions = qs; saveLS();
   toast(`✅ ${qs.length} questions loaded!`);
-  showCSVPreview(); updateUploadZone(qs.length);
+  showPreview(); updateZone(qs.length);
 }
-function csvParse(line){
-  const res=[];let cur='';let inQ=false;
-  for(const ch of line){
-    if(ch==='"'){inQ=!inQ;}
-    else if(ch===','&&!inQ){res.push(cur);cur='';}
-    else cur+=ch;
-  }
+function csvSplit(line){
+  const res=[]; let cur=''; let inQ=false;
+  for(const ch of line){ if(ch==='"'){inQ=!inQ;} else if(ch===','&&!inQ){res.push(cur);cur='';} else cur+=ch; }
   res.push(cur); return res;
 }
-function showCSVPreview(){
-  document.getElementById('csv-preview').style.display='block';
-  document.getElementById('q-count').textContent=state.questions.length;
-  document.getElementById('q-preview-body').innerHTML=state.questions.map((q,i)=>`
-    <tr><td>${i+1}</td><td>${q.q}</td><td>${q.a}</td><td>${q.b}</td>
-    <td>${q.c}</td><td>${q.d}</td>
-    <td><span class="correct-badge">${q.correct}</span></td></tr>`).join('');
+function showPreview(){
+  document.getElementById('csv-preview').style.display = 'block';
+  document.getElementById('q-count-lbl').textContent = ST.questions.length + ' Questions Loaded';
+  document.getElementById('q-tbody').innerHTML = ST.questions.map((q,i)=>
+    `<tr><td>${i+1}</td><td>${q.q}</td><td>${q.a}</td><td>${q.b}</td><td>${q.c}</td><td>${q.d}</td><td><span class="cbadge">${q.correct}</span></td></tr>`
+  ).join('');
 }
-function updateUploadZone(count){
-  const bar=document.getElementById('csv-status-bar');
-  const txt=document.getElementById('csv-status-text');
-  const sub=document.getElementById('csv-status-sub');
-  if(bar) bar.style.display='flex';
-  if(txt) txt.textContent=`${count} Questions Loaded ✓`;
-  if(sub) sub.textContent='Saved! Go to 👥 Students tab next.';
-  const dz=document.getElementById('drop-zone');
-  if(dz){dz.style.borderColor='var(--green)';dz.style.background='rgba(0,212,170,0.04)';}
+function updateZone(n){
+  const bar=document.getElementById('csv-ok'); if(bar) bar.style.display='flex';
+  const t=document.getElementById('csv-ok-txt'); if(t) t.textContent=n+' Questions Loaded ✓';
+  const s=document.getElementById('csv-ok-sub'); if(s) s.textContent='Saved! Go to ☁ Database tab next.';
+  const dz=document.getElementById('drop-zone'); if(dz){dz.style.borderColor='var(--green)';dz.style.background='rgba(0,212,170,.04)';}
 }
 function clearCSV(){
-  state.questions=[]; saveLocalState();
-  document.getElementById('csv-status-bar').style.display='none';
+  ST.questions=[]; saveLS();
+  document.getElementById('csv-ok').style.display='none';
   document.getElementById('csv-preview').style.display='none';
-  const dz=document.getElementById('drop-zone');
-  if(dz){dz.style.borderColor='';dz.style.background='';}
+  const dz=document.getElementById('drop-zone'); if(dz){dz.style.borderColor='';dz.style.background='';}
   toast('CSV cleared');
 }
-function loadSampleCSV(){
+function loadSample(){
   parseCSV(`question,option_a,option_b,option_c,option_d,correct_answer
 What is the capital of India?,Mumbai,New Delhi,Kolkata,Chennai,B
 How many days in a week?,5,6,7,8,C
@@ -629,474 +604,371 @@ What is 12x12?,124,144,134,154,B
 Who wrote Romeo and Juliet?,Dickens,Twain,Shakespeare,Austen,C`);
 }
 
-// ════════════════════════════════════════════
-// STUDENT ROWS
-// ════════════════════════════════════════════
-let stuIdx=0;
-function buildStudentList(){
-  if(!document.getElementById('student-list').children.length){
-    [['Priya','ta'],['Anand','ml'],['Ravi','kn'],['Meena','hi'],['John','en']]
-      .forEach(([n,l])=>addStudentRow(n,l));
-  }
+// ══════════════════════
+// STUDENTS
+// ══════════════════════
+let si=0;
+function buildStudents(){
+  if(!document.getElementById('student-list').children.length)
+    [['Priya','ta'],['Anand','ml'],['Ravi','kn'],['Meena','hi'],['John','en']].forEach(([n,l])=>addRow(n,l));
 }
-function addStudentRow(name='',lang='en'){
+function addRow(name='', lang='en'){
   const el=document.getElementById('student-list');
-  const id=++stuIdx;
-  const div=document.createElement('div');
-  div.className='stu-row'; div.id=`sr_${id}`;
-  div.innerHTML=`
-    <div><label>Student Name</label>
-      <input type="text" id="sn_${id}" value="${name}" placeholder="Full name" style="margin:0"/></div>
-    <div><label>Language</label>
-      <select id="sl_${id}" style="margin:0">${LANG_OPT}</select></div>
-    <button class="btn btn-ghost btn-sm" style="margin-top:18px"
-      onclick="document.getElementById('sr_${id}').remove()">✕</button>`;
+  const id=++si; const div=document.createElement('div');
+  div.className='stu-row'; div.id='sr_'+id;
+  div.innerHTML=`<div><label>Name</label><input type="text" id="sn_${id}" value="${name}" placeholder="Student name" style="margin:0"/></div>
+    <div><label>Language</label><select id="sl_${id}" style="margin:0">${LOPT}</select></div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:18px" onclick="document.getElementById('sr_${id}').remove()">✕</button>`;
   el.appendChild(div);
-  if(lang) setTimeout(()=>{ const s=document.getElementById(`sl_${id}`); if(s) s.value=lang; },0);
+  if(lang) setTimeout(()=>{ const s=document.getElementById('sl_'+id); if(s) s.value=lang; }, 0);
 }
 function getStudents(){
-  return [...document.querySelectorAll('[id^="sr_"]')].map(row=>{
-    const id=row.id.replace('sr_','');
-    return {name:document.getElementById(`sn_${id}`)?.value.trim(),
-            lang:document.getElementById(`sl_${id}`)?.value};
+  return [...document.querySelectorAll('[id^="sr_"]')].map(r=>{
+    const id=r.id.replace('sr_','');
+    return {name:document.getElementById('sn_'+id)?.value.trim(), lang:document.getElementById('sl_'+id)?.value};
   }).filter(s=>s.name);
 }
 
-// ════════════════════════════════════════════
-// HOSTED URL
-// ════════════════════════════════════════════
-function checkUrl(){
-  const v=document.getElementById('hosted-url').value.trim();
-  document.getElementById('url-warn').style.display=(v&&!v.startsWith('http'))?'block':'none';
-}
-function saveHostedUrl(){
-  const v=document.getElementById('hosted-url').value.trim();
-  if(!v){ toast('Enter a URL first','#ff6584'); return; }
-  if(!v.startsWith('http')){ toast('URL must start with https://','#ff6584'); return; }
-  localStorage.setItem('qb_hosted_url',v.replace(/\/$/,''));
+// ══════════════════════
+// URL SAVE
+// ══════════════════════
+function checkUrl(){ const v=document.getElementById('hosted-url').value.trim(); document.getElementById('url-warn').style.display=(v&&!v.startsWith('http'))?'block':'none'; }
+function saveUrl(){
+  const v = document.getElementById('hosted-url').value.trim();
+  if(!v){toast('Enter a URL','#ff6584');return;}
+  if(!v.startsWith('http')){toast('Must start with https://','#ff6584');return;}
+  localStorage.setItem('qb_url', v.replace(/\/$/,''));
   toast('✅ URL saved!');
 }
 
-// ════════════════════════════════════════════
+// ══════════════════════
 // GENERATE LINKS
-// ════════════════════════════════════════════
+// ══════════════════════
 function generateLinks(){
-  if(!state.questions.length){ toast('Upload CSV first!','#ff6584'); switchTab('csv'); return; }
-  const students=getStudents();
+  if(!ST.questions.length){ toast('Upload CSV first!','#ff6584'); switchTab('csv'); return; }
+  if(!FB_URL){ toast('Set up Firebase Database first!','#ff6584'); switchTab('db'); return; }
+  const students = getStudents();
   if(!students.length){ toast('Add students first','#ff6584'); return; }
-
-  const savedUrl=localStorage.getItem('qb_hosted_url')||'';
-  const currentUrl=location.href.split('?')[0];
-  const base=savedUrl||currentUrl;
-
-  if(currentUrl.startsWith('file://')&&!savedUrl){
-    document.getElementById('links-container').innerHTML=`
-    <div style="background:rgba(255,101,132,0.1);border:2px solid var(--accent2);
-      border-radius:12px;padding:22px;text-align:center;">
-      <div style="font-size:2rem;margin-bottom:8px">📵</div>
-      <h3 style="color:var(--accent2);margin-bottom:6px">Local file — cannot send to phones!</h3>
-      <p class="muted">Host online first, paste URL in Step 1 above, then generate links.</p>
-    </div>`; return;
+  const savedUrl = localStorage.getItem('qb_url')||'';
+  const cur = location.href.split('?')[0];
+  const base = savedUrl || cur;
+  if(cur.startsWith('file://')&&!savedUrl){
+    document.getElementById('links-out').innerHTML=`<div style="background:rgba(255,101,132,.1);border:2px solid var(--accent2);border-radius:11px;padding:20px;text-align:center"><div style="font-size:1.8rem;margin-bottom:7px">📵</div><h3 style="color:var(--accent2);margin-bottom:5px">Local file — can't open on phones</h3><p class="muted">Host online first, paste URL above.</p></div>`;
+    return;
   }
-
-  state.quizIndex={};
-  const el=document.getElementById('links-container');
-  el.innerHTML='<p class="muted" style="margin-bottom:14px;font-size:0.82rem">📱 Each link contains the full quiz. Student taps → answers → submits → appears in your Results tab.</p>';
-
-  students.forEach(({name,lang})=>{
-    const qid=`${name.replace(/\W/g,'')}_${lang}_${Date.now()}`;
-    const encoded=encodeQuiz(name,lang,state.questions,qid);
-    const url=`${base}?quiz=${encoded}`;
-    const l=LANGS[lang]||LANGS.en;
-    const qrId=`qr_${qid}`;
-    state.quizIndex[qid]={name,lang};
-
-    el.innerHTML+=`
+  const el = document.getElementById('links-out');
+  el.innerHTML = '<p class="muted" style="margin-bottom:12px;font-size:.81rem">📱 Each link has full quiz + database. Student taps → answers → submits → appears in Results tab.</p>';
+  students.forEach(({name, lang})=>{
+    const qid = name.replace(/\W/g,'')+'_'+lang+'_'+Date.now();
+    const encoded = encQ(name, lang, ST.questions, qid, FB_URL);
+    const url = base+'?quiz='+encoded;
+    const l = LANGS[lang]||LANGS.en;
+    const qrId = 'qr_'+qid;
+    el.innerHTML += `
     <div class="link-card">
       <div class="lc-top">
         <span class="lc-name">${l.flag} ${name}</span>
-        <div class="flex">
-          <span class="lang-chip ${l.chip}">${l.name}</span>
-          <span class="status-pending" id="status_${qid}">⏳ Pending</span>
-        </div>
+        <div class="flex"><span class="lang-chip ${l.chip}">${l.name}</span><span class="s-pend" id="st_${qid}">⏳ Pending</span></div>
       </div>
       <div class="lc-grid">
         <div>
-          <label style="margin-bottom:5px">Student Quiz Link</label>
-          <div class="lc-url" id="url_${qid}">${url}</div>
-          <div class="flex" style="margin-top:8px">
-            <button class="btn btn-accent btn-sm" onclick="copyLink('${qid}')">📋 Copy Link</button>
-            <button class="btn btn-ghost btn-sm" onclick="testOpen('${qid}')">🔗 Test</button>
-            <button class="btn btn-ghost btn-sm" onclick="sendWA('${qid}','${name}')">💬 WhatsApp</button>
+          <label style="margin-bottom:4px">Student Quiz Link</label>
+          <div class="lc-url" id="u_${qid}">${url}</div>
+          <div class="flex" style="margin-top:7px">
+            <button class="btn btn-accent btn-sm" onclick="copyLink('${qid}')">📋 Copy</button>
+            <button class="btn btn-ghost btn-sm" onclick="testLink('${qid}')">🔗 Test</button>
+            <button class="btn btn-ghost btn-sm" onclick="waLink('${qid}','${name}','${lang}')">💬 WhatsApp</button>
           </div>
         </div>
         <div>
-          <label style="margin-bottom:5px">Scan QR Code</label>
-          <div class="qr-box" id="${qrId}"><span class="muted" style="font-size:0.72rem;padding:6px">Loading...</span></div>
-          <p class="muted" style="font-size:0.7rem;margin-top:5px;text-align:center">Student scans on phone</p>
+          <label style="margin-bottom:4px">QR Code</label>
+          <div class="qr-box" id="${qrId}"><span class="muted" style="font-size:.7rem;padding:5px">Loading...</span></div>
+          <p class="muted" style="font-size:.69rem;margin-top:3px;text-align:center">Scan on phone</p>
         </div>
       </div>
     </div>`;
-    setTimeout(()=>makeQR(qrId,url),80);
+    setTimeout(()=>makeQR(qrId, url), 80);
   });
-
-  saveLocalState();
-  // Update status badges for already-submitted students
-  refreshStatuses();
   toast('Links ready! Share with students.');
 }
-
-function makeQR(id,url){
+function makeQR(id, url){
   const el=document.getElementById(id); if(!el) return;
-  const img=new Image();
-  img.src=`https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=${encodeURIComponent(url)}&margin=6`;
-  img.width=110; img.height=110; img.style.borderRadius='5px';
-  img.onerror=()=>{ el.innerHTML='<span class="muted" style="font-size:0.72rem;padding:8px">QR needs<br>internet</span>'; };
+  const img=new Image(); img.width=108; img.height=108; img.style.borderRadius='5px';
+  img.src=`https://api.qrserver.com/v1/create-qr-code/?size=108x108&data=${encodeURIComponent(url)}&margin=5`;
+  img.onerror=()=>{ el.innerHTML='<span class="muted" style="font-size:.7rem;padding:6px">QR needs<br>internet</span>'; };
   el.innerHTML=''; el.appendChild(img);
 }
-function copyLink(qid){
-  const u=document.getElementById(`url_${qid}`)?.textContent?.trim();
-  if(!u) return;
-  navigator.clipboard.writeText(u).then(()=>toast('Link copied!')).catch(()=>prompt('Copy:',u));
-}
-function testOpen(qid){
-  const u=document.getElementById(`url_${qid}`)?.textContent?.trim();
-  if(u) window.open(u,'_blank');
-}
-function sendWA(qid,name){
-  const u=document.getElementById(`url_${qid}`)?.textContent?.trim(); if(!u) return;
-  const lang=state.quizIndex[qid]?.lang; const l=LANGS[lang]||LANGS.en;
-  window.open(`https://wa.me/?text=${encodeURIComponent(`${l.flag} Hello ${name}! Your quiz is ready in ${l.name}.\n\nOpen this link on your phone:\n${u}`)}`,'_blank');
-}
-async function refreshStatuses(){
-  const keys=await shList(SH_PFX);
-  keys.forEach(k=>{
-    const qid=k.replace(SH_PFX,'');
-    const badge=document.getElementById(`status_${qid}`);
-    if(badge){ badge.className='status-done'; badge.textContent='✅ Submitted'; }
-  });
-}
+function copyLink(qid){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; navigator.clipboard.writeText(u).then(()=>toast('Link copied!')).catch(()=>prompt('Copy:',u)); }
+function testLink(qid){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(u) window.open(u,'_blank'); }
+function waLink(qid, name, lang){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; const l=LANGS[lang]||LANGS.en; window.open(`https://wa.me/?text=${encodeURIComponent(l.flag+' Hello '+name+'! Your quiz is ready in '+l.name+'.\n\nOpen this link:\n'+u)}`,'_blank'); }
 
-// ════════════════════════════════════════════
+// ══════════════════════
 // STUDENT QUIZ
-// ════════════════════════════════════════════
-let QD=null;  // current quiz data
-let SA={};    // student answers  {qi: optionIndex}
+// ══════════════════════
+let QD=null, SA={};
 
-async function initStudentQuiz(encoded){
-  const data=decodeQuiz(encoded);
-  if(!data||!data.questions?.length){
-    document.getElementById('quiz-meta').innerHTML=
-      `<span style="color:var(--accent2)">❌ Invalid quiz link.</span><br>
-       <span style="font-size:0.82rem;color:var(--muted)">Ask your teacher to resend the link.</span>`;
+async function initStudent(encoded){
+  const d = decQ(encoded);
+  if(!d||!d.qs?.length){
+    document.getElementById('quiz-meta').innerHTML='<span style="color:var(--accent2)">❌ Invalid link. Ask your teacher to resend.</span>';
     return;
   }
-
-  // Already submitted? (check student's localStorage)
-  const prev=localStorage.getItem(SKEY_PFX+data.qid);
-  if(prev){ try{ showAlreadySubmitted(JSON.parse(prev)); return; }catch(e){} }
-
-  QD={...data,encoded};
-  const l=LANGS[data.lang]||LANGS.en;
-  const i=I18N[data.lang]||I18N.en;
-  document.getElementById('quiz-meta').textContent=`${l.flag} ${i.quiz} — ${data.name}`;
+  const prev = localStorage.getItem(DONE_PFX+d.qid);
+  if(prev){ try{ showDone(JSON.parse(prev)); return; }catch(e){} }
+  QD = {...d};
+  const l=LANGS[d.lang]||LANGS.en, i=I18[d.lang]||I18.en;
+  document.getElementById('quiz-meta').textContent = l.flag+' Quiz — '+d.name;
   document.querySelector('.quiz-shell').classList.add(l.cls);
-  document.getElementById('lbl-details').textContent=i.details;
-  document.getElementById('lbl-name').textContent=i.name;
-  document.getElementById('lbl-email').textContent=i.email;
-  document.getElementById('s-name').value=data.name;
-  document.getElementById('submit-label').textContent=i.submit;
-  document.getElementById('name-entry').style.display='block';
+  document.getElementById('lbl-det').textContent = i.det;
+  document.getElementById('lbl-name').textContent = i.name;
+  document.getElementById('lbl-email').textContent = i.email;
+  document.getElementById('s-name').value = d.name;
+  document.getElementById('sub-lbl').textContent = i.sub;
+  document.getElementById('name-entry').style.display = 'block';
 }
 
 function startQuiz(){
-  const name=document.getElementById('s-name').value.trim();
+  const name = document.getElementById('s-name').value.trim();
   if(!name){ toast('Please enter your name','#ff6584'); return; }
-  document.getElementById('name-entry').style.display='none';
-  document.getElementById('quiz-area').style.display='block';
-  SA={};
-  renderQs();
+  document.getElementById('name-entry').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  SA = {}; renderQs();
 }
 
 function renderQs(){
-  const {lang,questions}=QD;
-  const i=I18N[lang]||I18N.en;
-  const L=['A','B','C','D'];
-  const total=questions.length;
-  document.getElementById('prog-text').textContent=`${i.q} 0 ${i.of} ${total}`;
-  document.getElementById('prog-pct').textContent='0%';
-  const c=document.getElementById('questions-container'); c.innerHTML='';
-  questions.forEach((q,qi)=>{
-    const qT=tr(q.q,lang);
-    const opts=[q.a,q.b,q.c,q.d].map(o=>tr(o,lang));
-    c.innerHTML+=`
-    <div class="q-card" id="qc_${qi}">
+  const {lang,qs}=QD, i=I18[lang]||I18.en, L=['A','B','C','D'], total=qs.length;
+  document.getElementById('prog-txt').textContent = i.q+' 0 '+i.of+' '+total;
+  document.getElementById('prog-pct').textContent = '0%';
+  const c=document.getElementById('q-container'); c.innerHTML='';
+  qs.forEach((q,qi)=>{
+    const qT=tr(q.q,lang), opts=[q.a,q.b,q.c,q.d].map(o=>tr(o,lang));
+    c.innerHTML+=`<div class="q-card" id="qc_${qi}">
       <div class="q-num">${i.q} ${qi+1} / ${total}</div>
       <div class="q-text">${qT}</div>
-      ${opts.map((o,j)=>`
-      <label class="opt" id="o_${qi}_${j}" onclick="pick(${qi},${j})">
-        <span class="opt-letter">${L[j]}</span><span>${o}</span>
-      </label>`).join('')}
+      ${opts.map((o,j)=>`<label class="opt" id="o_${qi}_${j}" onclick="pick(${qi},${j})"><span class="opt-l">${L[j]}</span><span>${o}</span></label>`).join('')}
     </div>`;
   });
 }
 
 function pick(qi,oi){
-  for(let j=0;j<4;j++) document.getElementById(`o_${qi}_${j}`)?.classList.remove('sel');
-  document.getElementById(`o_${qi}_${oi}`)?.classList.add('sel');
+  for(let j=0;j<4;j++) document.getElementById('o_'+qi+'_'+j)?.classList.remove('sel');
+  document.getElementById('o_'+qi+'_'+oi)?.classList.add('sel');
   SA[qi]=oi;
-  const total=QD.questions.length;
-  const done=Object.keys(SA).length;
-  const pct=Math.round((done/total)*100);
-  document.getElementById('prog-fill').style.width=pct+'%';
+  const total=QD.qs.length, done=Object.keys(SA).length, pct=Math.round((done/total)*100);
+  document.getElementById('prog-bar').style.width=pct+'%';
   document.getElementById('prog-pct').textContent=pct+'%';
-  const i=I18N[QD.lang]||I18N.en;
-  document.getElementById('prog-text').textContent=`${i.q} ${done} ${i.of} ${total}`;
+  const i=I18[QD.lang]||I18.en;
+  document.getElementById('prog-txt').textContent=i.q+' '+done+' '+i.of+' '+total;
 }
 
 async function submitQuiz(){
-  const total=QD.questions.length;
-  const done=Object.keys(SA).length;
+  const total=QD.qs.length, done=Object.keys(SA).length;
   if(done<total){
-    toast(`Please answer all ${total} questions (${done}/${total} done)`,'#ffd166');
-    for(let i=0;i<total;i++){
-      if(SA[i]===undefined){
-        document.getElementById(`qc_${i}`)?.scrollIntoView({behavior:'smooth',block:'center'}); break;
-      }
-    }
+    toast('Answer all '+total+' questions ('+done+'/'+total+' done)','#ffd166');
+    for(let i=0;i<total;i++){ if(SA[i]===undefined){ document.getElementById('qc_'+i)?.scrollIntoView({behavior:'smooth',block:'center'}); break; } }
     return;
   }
 
-  // Disable button
-  const btn=document.getElementById('submit-btn');
-  btn.disabled=true;
-  btn.innerHTML='<span class="spinner"></span> Submitting...';
+  const btn=document.getElementById('sub-btn');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Submitting...';
 
   const name=document.getElementById('s-name').value.trim();
   const email=document.getElementById('s-email').value.trim();
-  const {lang,questions,qid}=QD;
+  const {lang,qs,qid,fbUrl}=QD;
   const L=['A','B','C','D'];
 
-  const answers=questions.map((q,i)=>{
-    const ci=SA[i];
-    const cl=L[ci];
-    const ok=cl===q.correct;
+  const answers = qs.map((q,i)=>{
+    const ci=SA[i], cl=L[ci], ok=cl===q.correct;
     return {
-      question:q.q,
-      chosen:cl,
+      question:  q.q,
+      chosen:    cl,
       chosenText:[q.a,q.b,q.c,q.d][ci],
-      correct:q.correct,
+      correct:   q.correct,
       correctText:[q.a,q.b,q.c,q.d][L.indexOf(q.correct)],
-      isCorrect:ok
+      isCorrect: ok
     };
   });
 
-  const score=answers.filter(a=>a.isCorrect).length;
-  const sub={
-    qid,name,email,lang,answers,score,total,
-    percent:Math.round((score/total)*100),
-    submittedAt:new Date().toLocaleString()
-  };
+  const score   = answers.filter(a=>a.isCorrect).length;
+  const percent = Math.round((score/total)*100);
+  const sub = {qid, name, email, lang, answers, score, total, percent, submittedAt: new Date().toLocaleString()};
 
-  // Mark answers on screen before navigating
+  // Mark answers on screen
   answers.forEach((a,qi)=>{
-    const ci=L.indexOf(a.chosen);
-    const ri=L.indexOf(a.correct);
-    document.getElementById(`o_${qi}_${ci}`)?.classList.add(a.isCorrect?'right':'wrong');
-    if(!a.isCorrect) document.getElementById(`o_${qi}_${ri}`)?.classList.add('right');
+    const ci=L.indexOf(a.chosen), ri=L.indexOf(a.correct);
+    document.getElementById('o_'+qi+'_'+ci)?.classList.add(a.isCorrect?'right':'wrong');
+    if(!a.isCorrect) document.getElementById('o_'+qi+'_'+ri)?.classList.add('right');
   });
 
-  // Save on student device (prevent double-submit)
-  localStorage.setItem(SKEY_PFX+qid, JSON.stringify(sub));
+  // Save locally so student can't re-submit
+  localStorage.setItem(DONE_PFX+qid, JSON.stringify(sub));
 
-  // ★ Write to shared storage → teacher can read from any device ★
-  await shSet(SH_PFX+qid, sub);
+  // ★ Push to Firebase — teacher reads from any device ★
+  if(fbUrl){
+    const ok = await pushToFirebase(fbUrl, sub);
+    if(!ok) console.warn('Firebase push failed — submission saved locally only');
+  }
 
-  setTimeout(()=>showResult(sub), 500);
+  setTimeout(()=>showResult(sub), 400);
+}
+
+async function pushToFirebase(fbUrl, sub){
+  try{
+    const endpoint = fbUrl.replace(/\/$/,'')+'/quizresults.json';
+    const r = await fetch(endpoint, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(sub)
+    });
+    return r.ok;
+  }catch(e){ return false; }
 }
 
 function showResult(sub){
   document.getElementById('quiz-area').style.display='none';
   const ra=document.getElementById('result-area'); ra.style.display='block';
-  const l=LANGS[sub.lang]||LANGS.en;
-  const i=I18N[sub.lang]||I18N.en;
-  const pct=sub.percent;
-  const emoji=pct>=80?'🏆':pct>=60?'😊':pct>=40?'🙂':'💪';
+  const l=LANGS[sub.lang]||LANGS.en, i=I18[sub.lang]||I18.en;
+  const pct=sub.percent, emoji=pct>=80?'🏆':pct>=60?'😊':pct>=40?'🙂':'💪';
   const sc=pct>=70?'var(--green)':pct>=40?'var(--yellow)':'var(--accent2)';
-  ra.innerHTML=`
-  <div class="result-screen">
-    <div class="result-emoji">${emoji}</div>
-    <div class="result-score" style="color:${sc}">${sub.score}/${sub.total}</div>
-    <div class="result-label">${pct}% Correct — ${l.flag} ${l.name}</div>
-    <div class="card" style="text-align:left;padding:14px;margin-bottom:16px">
+  ra.innerHTML=`<div class="res-screen">
+    <div class="res-emoji">${emoji}</div>
+    <div class="res-score" style="color:${sc}">${sub.score}/${sub.total}</div>
+    <div class="res-label">${pct}% Correct — ${l.flag} ${l.name}</div>
+    <div class="card" style="text-align:left;padding:13px;margin-bottom:14px">
       <p class="muted">👤 ${sub.name}${sub.email?' · '+sub.email:''}</p>
-      <p class="muted" style="margin-top:4px">🕐 ${sub.submittedAt}</p>
-      <p style="margin-top:8px;font-size:0.85rem;color:var(--green);font-weight:600">
-        ✅ Your answers have been submitted to the teacher.
-      </p>
+      <p class="muted" style="margin-top:3px">🕐 ${sub.submittedAt}</p>
+      <p style="margin-top:7px;font-size:.84rem;color:var(--green);font-weight:600">✅ Answers submitted to teacher successfully.</p>
     </div>
     <div style="text-align:left">
-      <p style="font-weight:700;margin-bottom:12px;font-size:0.92rem">${i.review}</p>
+      <p style="font-weight:700;margin-bottom:10px;font-size:.9rem">${i.rev}</p>
       ${sub.answers.map((a,idx)=>`
       <div class="ar-item">
         <div class="ar-q">Q${idx+1}. ${a.question}</div>
-        <div class="ar-opt ${a.isCorrect?'ar-correct':'ar-wrong'}">
-          ${a.isCorrect?'✅':'❌'} ${a.chosen}: ${a.chosenText}
-          <span class="ar-label">${a.isCorrect?'Correct!':'Your answer'}</span>
-        </div>
-        ${!a.isCorrect?`<div class="ar-opt ar-correct">
-          ✅ ${a.correct}: ${a.correctText}<span class="ar-label">Correct answer</span>
-        </div>`:''}
+        <div class="ar-opt ${a.isCorrect?'ar-ok':'ar-no'}">${a.isCorrect?'✅':'❌'} ${a.chosen}: ${a.chosenText}<span class="ar-lbl">${a.isCorrect?'Correct!':'Your answer'}</span></div>
+        ${!a.isCorrect?`<div class="ar-opt ar-ok">✅ ${a.correct}: ${a.correctText}<span class="ar-lbl">Correct answer</span></div>`:''}
       </div>`).join('')}
     </div>
   </div>`;
 }
 
-function showAlreadySubmitted(sub){
+function showDone(sub){
   document.getElementById('name-entry').style.display='none';
   const ra=document.getElementById('result-area'); ra.style.display='block';
   const l=LANGS[sub.lang]||LANGS.en;
-  ra.innerHTML=`
-  <div class="card" style="text-align:center;padding:36px;margin-top:20px">
-    <div style="font-size:2.5rem;margin-bottom:12px">✅</div>
-    <h2 style="margin-bottom:8px">Already Submitted!</h2>
+  ra.innerHTML=`<div class="card" style="text-align:center;padding:32px;margin-top:18px">
+    <div style="font-size:2.3rem;margin-bottom:10px">✅</div>
+    <h2 style="margin-bottom:7px">Already Submitted!</h2>
     <p class="muted">Score: <strong style="color:var(--green)">${sub.score}/${sub.total} (${sub.percent}%)</strong></p>
-    <p class="muted" style="margin-top:4px">${l.flag} ${l.name} · ${sub.submittedAt}</p>
+    <p class="muted" style="margin-top:3px">${l.flag} ${l.name} · ${sub.submittedAt}</p>
   </div>`;
 }
 
-// ════════════════════════════════════════════
+// ══════════════════════
 // RESULTS DASHBOARD
-// ════════════════════════════════════════════
+// ══════════════════════
 let _subs=[];
 
-async function loadAndRenderResults(){
-  document.getElementById('results-body').innerHTML=
-    '<div class="empty-state"><span class="spinner" style="border-color:rgba(108,99,255,0.3);border-top-color:var(--accent)"></span><p style="margin-top:10px">Loading results...</p></div>';
-
-  const keys=await shList(SH_PFX);
-  _subs=[];
-  for(const k of keys){
-    try{ const s=await shGet(k); if(s) _subs.push(s); }catch(e){}
+async function loadResults(){
+  document.getElementById('res-body').innerHTML='<div class="empty"><span class="spin" style="border-color:rgba(108,99,255,.3);border-top-color:var(--accent)"></span><p style="margin-top:9px">Loading results...</p></div>';
+  if(!FB_URL){
+    document.getElementById('res-body').innerHTML='<div class="empty"><p style="color:var(--accent2);font-weight:700">⚠️ Firebase not connected.</p><p class="muted" style="margin-top:6px">Go to ☁ Database tab and set up Firebase first.</p></div>';
+    return;
   }
+  _subs = await fbRead();
   renderTable(_subs);
 }
 
 function renderTable(subs){
-  const el=document.getElementById('results-body');
-  document.getElementById('results-subtitle').textContent=
-    subs.length?`${subs.length} student${subs.length>1?'s':''} submitted`:'Waiting for submissions...';
-
+  const el=document.getElementById('res-body');
+  document.getElementById('res-sub').textContent = subs.length ? subs.length+' student'+(subs.length>1?'s':'')+' submitted' : 'Waiting for submissions...';
   if(!subs.length){
-    el.innerHTML=`<div class="empty-state">
-      <div style="font-size:2.2rem;margin-bottom:10px">📭</div>
-      <p>No submissions yet.</p>
-      <p class="muted" style="margin-top:6px">Students need to open their link and tap Submit.</p>
-    </div>`; return;
+    el.innerHTML='<div class="empty"><div style="font-size:2rem;margin-bottom:8px">📭</div><p>No submissions yet.</p><p class="muted" style="margin-top:5px">Students need to open their link and tap Submit.</p></div>';
+    return;
   }
-
-  const maxQ=Math.max(...subs.map(s=>s.answers.length));
-  const qH=Array.from({length:maxQ},(_,i)=>`<th>Q${i+1}</th>`).join('');
-  const rows=subs.map((s,idx)=>{
-    const cls=s.percent>=70?'sc-high':s.percent>=40?'sc-mid':'sc-low';
-    const qC=Array.from({length:maxQ},(_,i)=>{
-      const a=s.answers[i];
+  const maxQ = Math.max(...subs.map(s=>s.answers?.length||0));
+  const qH = Array.from({length:maxQ},(_,i)=>`<th>Q${i+1}</th>`).join('');
+  const rows = subs.map((s,idx)=>{
+    const cls=s.percent>=70?'sh':s.percent>=40?'sm':'sl';
+    const qC = Array.from({length:maxQ},(_,i)=>{
+      const a=s.answers?.[i];
       if(!a) return '<td>—</td>';
-      return `<td title="${a.question}\nCorrect: ${a.correct} – ${a.correctText}">
-        ${a.isCorrect?`<span class="c-yes">✅ ${a.chosen}</span>`:`<span class="c-no">❌ ${a.chosen}</span>`}
-      </td>`;
+      return `<td title="${a.question}\nCorrect: ${a.correct} – ${a.correctText}">${a.isCorrect?`<span class="cy">✅ ${a.chosen}</span>`:`<span class="cn">❌ ${a.chosen}</span>`}</td>`;
     }).join('');
     const l=LANGS[s.lang]||LANGS.en;
-    return `<tr>
-      <td>${idx+1}</td><td><strong>${s.name}</strong></td>
-      <td>${l.flag} ${l.name}</td><td>${s.email||'—'}</td>
-      ${qC}
-      <td><span class="${cls}">${s.score}/${s.total} (${s.percent}%)</span></td>
-      <td>${s.submittedAt}</td>
-    </tr>`;
+    return `<tr><td>${idx+1}</td><td><strong>${s.name}</strong></td><td>${l.flag} ${l.name}</td><td>${s.email||'—'}</td>${qC}<td><span class="${cls}">${s.score}/${s.total} (${s.percent}%)</span></td><td>${s.submittedAt}</td></tr>`;
   }).join('');
-
-  el.innerHTML=`<div class="results-wrap"><table class="res-table">
-    <thead><tr><th>#</th><th>Name</th><th>Language</th><th>Email</th>${qH}<th>Score</th><th>Submitted At</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table></div>`;
+  el.innerHTML=`<div class="rw"><table class="rt"><thead><tr><th>#</th><th>Name</th><th>Language</th><th>Email</th>${qH}<th>Score</th><th>Submitted At</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
-function refreshResults(){ toast('Refreshing...'); loadAndRenderResults(); }
+function loadResults(){ return actualLoadResults(); }
+async function actualLoadResults(){
+  document.getElementById('res-body').innerHTML='<div class="empty"><span class="spin" style="border-color:rgba(108,99,255,.3);border-top-color:var(--accent)"></span><p style="margin-top:9px">Loading results...</p></div>';
+  if(!FB_URL){
+    document.getElementById('res-body').innerHTML='<div class="empty"><p style="color:var(--accent2);font-weight:700">⚠️ Firebase not connected.</p><p class="muted" style="margin-top:6px">Go to ☁ Database tab and set up Firebase first.</p></div>';
+    return;
+  }
+  _subs = await fbRead();
+  renderTable(_subs);
+}
 
 async function clearResults(){
-  if(!confirm('Clear ALL results? This cannot be undone.')) return;
-  const keys=await shList(SH_PFX);
-  for(const k of keys) await shDel(k);
-  _subs=[]; renderTable([]);
+  if(!confirm('Clear ALL results? Cannot be undone.')) return;
+  await fbClear(); _subs=[]; renderTable([]);
   toast('Results cleared');
 }
 
-// ════════════════════════════════════════════
+// ══════════════════════
 // DOWNLOAD
-// ════════════════════════════════════════════
-function downloadCSV(){
+// ══════════════════════
+function dlCSV(){
   if(!_subs.length){ toast('No results to download!','#ff6584'); return; }
-  const maxQ=Math.max(..._subs.map(s=>s.answers.length));
-  const hdr=['#','Name','Language','Email',
+  const maxQ = Math.max(..._subs.map(s=>s.answers?.length||0));
+  const hdr = ['#','Name','Language','Email',
     ...Array.from({length:maxQ},(_,i)=>[`Q${i+1}_Answer`,`Q${i+1}_Letter`,`Q${i+1}_Correct`,`Q${i+1}_Mark`]).flat(),
     'Score','Total','Percent','Submitted At'].join(',');
-  const rows=_subs.map((s,i)=>{
-    const qC=Array.from({length:maxQ},(_,j)=>{
-      const a=s.answers[j];
+  const rows = _subs.map((s,i)=>{
+    const qC = Array.from({length:maxQ},(_,j)=>{
+      const a=s.answers?.[j];
       if(!a) return ',,,"N/A"';
       return `"${a.chosenText}",${a.chosen},"${a.correctText}","${a.isCorrect?'✓':'✗'}"`;
     }).join(',');
     const l=LANGS[s.lang]||LANGS.en;
     return `${i+1},"${s.name}",${l.name},"${s.email||''}",${qC},${s.score},${s.total},${s.percent}%,"${s.submittedAt}"`;
   }).join('\n');
-  dl('\uFEFF'+hdr+'\n'+rows,'quiz_results.csv','text/csv;charset=utf-8');
+  dl('\uFEFF'+hdr+'\n'+rows, 'quiz_results.csv', 'text/csv;charset=utf-8');
 }
 
-function downloadExcel(){
+function dlXLS(){
   if(!_subs.length){ toast('No results to download!','#ff6584'); return; }
-  const maxQ=Math.max(..._subs.map(s=>s.answers.length));
-  const c=v=>`<Cell><Data ss:Type="String">${String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</Data></Cell>`;
-  const hdrs=['#','Name','Language','Email',
+  const maxQ = Math.max(..._subs.map(s=>s.answers?.length||0));
+  const c = v=>`<Cell><Data ss:Type="String">${String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</Data></Cell>`;
+  const hdrs = ['#','Name','Language','Email',
     ...Array.from({length:maxQ},(_,i)=>[`Q${i+1} Answer`,`Q${i+1} Letter`,`Q${i+1} Correct`,`Q${i+1} Mark`]).flat(),
     'Score','Total','Percent','Submitted At'];
-  const hRow=`<Row>${hdrs.map(h=>c(h)).join('')}</Row>`;
-  const rows=_subs.map((s,i)=>{
-    const qC=Array.from({length:maxQ},(_,j)=>{
-      const a=s.answers[j];
+  const hRow = `<Row>${hdrs.map(h=>c(h)).join('')}</Row>`;
+  const rows = _subs.map((s,i)=>{
+    const qC = Array.from({length:maxQ},(_,j)=>{
+      const a=s.answers?.[j];
       if(!a) return c('')+c('')+c('')+c('N/A');
       return c(a.chosenText)+c(a.chosen)+c(a.correctText)+c(a.isCorrect?'✓':'✗');
     }).join('');
     const l=LANGS[s.lang]||LANGS.en;
     return `<Row>${c(i+1)}${c(s.name)}${c(l.name)}${c(s.email||'')}${qC}${c(s.score)}${c(s.total)}${c(s.percent+'%')}${c(s.submittedAt)}</Row>`;
   }).join('');
-  const xml=`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Quiz Results"><Table>${hRow}${rows}</Table></Worksheet></Workbook>`;
-  dl(xml,'quiz_results.xls','application/vnd.ms-excel');
+  dl(`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Quiz Results"><Table>${hRow}${rows}</Table></Worksheet></Workbook>`, 'quiz_results.xls', 'application/vnd.ms-excel');
 }
 
-function dl(content,name,type){
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([content],{type}));
-  a.download=name; a.click();
-}
+function dl(content, name, type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type})); a.download=name; a.click(); }
 
-// ════════════════════════════════════════════
+// ══════════════════════
 // TOAST
-// ════════════════════════════════════════════
+// ══════════════════════
 let _tt;
-function toast(msg,bg='#00d4aa'){
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.style.background=bg;
-  el.style.color=bg==='#00d4aa'?'#060612':'#fff';
-  el.classList.add('show');
-  clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),3000);
-}
+function toast(msg, bg='#00d4aa'){ const el=document.getElementById('toast'); el.textContent=msg; el.style.background=bg; el.style.color=bg==='#00d4aa'?'#060612':'#fff'; el.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),3000); }
 
-// ════════════════════════════════════════════
 // INIT
-// ════════════════════════════════════════════
 route();
-document.getElementById('admin-pw')?.addEventListener('keydown',e=>{ if(e.key==='Enter') adminLogin(); });
+document.getElementById('admin-pw')?.addEventListener('keydown', e=>{ if(e.key==='Enter') adminLogin(); });
 </script>
 </body>
 </html>

@@ -45,7 +45,7 @@ th{background:rgba(108,99,255,.15);color:var(--accent);padding:8px 11px;text-ali
 td{padding:8px 11px;border-bottom:1px solid var(--border);vertical-align:top}
 tr:hover td{background:rgba(255,255,255,.02)}
 .cbadge{display:inline-block;padding:2px 7px;border-radius:20px;background:rgba(0,212,170,.15);color:var(--green);font-size:.73rem;font-weight:700}
-.stu-row{display:grid;grid-template-columns:1fr 140px 140px auto;gap:9px;align-items:end;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 13px;margin-bottom:7px}
+.stu-row{display:grid;grid-template-columns:1fr 150px 140px auto;gap:9px;align-items:end;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 13px;margin-bottom:7px}
 .stu-row input,.stu-row select{margin:0}
 .link-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px;margin-bottom:11px}
 .lc-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px;margin-bottom:9px}
@@ -652,6 +652,15 @@ let si=0;
 function buildStudents(){
   if(!document.getElementById('student-list').children.length)
     loadSampleStudents();
+}
+
+function downloadSampleStudentCSV(){
+  const content = 'name,phone,language\nPriya,919876543210,ta\nAnand,919123456789,ml\nRavi,918765432109,kn\nMeena,917654321098,hi\nJohn,919011223344,en';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], {type:'text/csv'}));
+  a.download = 'students_sample.csv';
+  a.click();
+  toast('Sample CSV downloaded!');
 }
 function loadSampleStudents(){
   document.getElementById('student-list').innerHTML='';

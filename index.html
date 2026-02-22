@@ -462,15 +462,40 @@ loadLS();
 // ENCODE / DECODE
 // Quiz data + Firebase URL travel inside the link
 // ══════════════════════
-function encQ(name, lang, qs, qid, fbUrl){
-  const p = {n:name, l:lang, q:qs, id:qid, f:fbUrl};
+function encQ(name, lang, qid, fbUrl){
+  // Only tiny payload in URL — questions stored in Firebase
+  const p = {n:name, l:lang, id:qid, f:fbUrl};
   return btoa(unescape(encodeURIComponent(JSON.stringify(p))));
 }
 function decQ(s){
   try{
     const d = JSON.parse(decodeURIComponent(escape(atob(s))));
-    return {name:d.n, lang:d.l, qs:d.q, qid:d.id, fbUrl:d.f||''};
+    return {name:d.n, lang:d.l, qid:d.id, fbUrl:d.f||''};
   }catch(e){ return null; }
+}
+
+// Upload quiz questions to Firebase under /quizzes/{qid}
+async function fbSaveQuiz(fbUrl, qid, name, lang, questions){
+  try{
+    const endpoint = fbUrl.replace(/\/+$/,'')+'/quizzes/'+qid+'.json';
+    const r = await fetch(endpoint, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({name, lang, questions, createdAt: new Date().toLocaleString()})
+    });
+    return r.ok;
+  }catch(e){ console.error('fbSaveQuiz',e); return false; }
+}
+
+// Student fetches quiz questions from Firebase
+async function fbLoadQuiz(fbUrl, qid){
+  try{
+    const endpoint = fbUrl.replace(/\/+$/,'')+'/quizzes/'+qid+'.json';
+    const r = await fetch(endpoint);
+    if(!r.ok) return null;
+    const d = await r.json();
+    return d;
+  }catch(e){ console.error('fbLoadQuiz',e); return null; }
 }
 
 // ══════════════════════
@@ -594,8 +619,25 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 });
 function handleDrop(e){ e.preventDefault(); document.getElementById('drop-zone').classList.remove('drag'); const f=e.dataTransfer.files[0]; if(f) handleCSV(f); }
-function handleCSV(file){ if(!file) return; const r=new FileReader(); r.onload=e=>parseCSV(e.target.result); r.readAsText(file); }
+function handleCSV(file){
+  if(!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    let text = e.target.result;
+    if(text.charCodeAt(0) > 127){
+      const r2 = new FileReader();
+      r2.onload = e2 => {
+        try{ text = new TextDecoder('utf-8').decode(e2.target.result); }
+        catch(err){ try{ text = new TextDecoder('windows-1252').decode(e2.target.result); }catch(e3){} }
+        parseCSV(text);
+      };
+      r2.readAsArrayBuffer(file);
+    } else { parseCSV(text); }
+  };
+  r.readAsText(file, 'utf-8');
+}
 function parseCSV(txt){
+  txt = txt.replace(/^\uFEFF/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
   const lines = txt.trim().split('\n').filter(l=>l.trim());
   const qs = [];
   const start = lines[0].toLowerCase().includes('question') ? 1 : 0;
@@ -698,21 +740,78 @@ function getStudents(){
 // Import students from CSV (name, phone, language)
 function importStudentCSV(file){
   if(!file) return;
-  const r=new FileReader();
-  r.onload=e=>{
-    const lines=e.target.result.trim().split('\n').filter(l=>l.trim());
-    const start=lines[0].toLowerCase().includes('name')?1:0;
+
+  function parseAndLoad(text){
+    // Strip BOM (ï»¿ or \uFEFF) and any junk at start
+    text = text.replace(/^\uFEFF/,'')          // UTF-8 BOM
+               .replace(/^[\u00EF\u00BB\u00BF]+/,'') // latin1-read BOM bytes
+               .replace(/\r\n/g,'\n')
+               .replace(/\r/g,'\n');
+
+    const lines = text.trim().split('\n').filter(l=>l.trim());
+    if(!lines.length){ toast('CSV appears empty','#ff6584'); return; }
+
+    // Skip header row if present
+    const first = lines[0].toLowerCase();
+    const start = (first.includes('name') || first.includes('phone') || first.includes('lang')) ? 1 : 0;
+
     document.getElementById('student-list').innerHTML=''; si=0;
     let count=0;
-    for(let i=start;i<lines.length;i++){
-      const cols=lines[i].split(',').map(s=>s.trim().replace(/^"|"$/g,''));
-      if(cols.length<2) continue;
-      const [name,phone,lang='en']=cols;
-      if(name){ addRow(name, phone||'', lang.toLowerCase()); count++; }
+
+    for(let i=start; i<lines.length; i++){
+      const raw = lines[i].trim();
+      if(!raw) continue;
+
+      // Split by comma, handle quoted fields
+      const cols = raw.split(',').map(s=>
+        s.trim()
+         .replace(/^["'\u201C\u201D]+/,'')   // remove opening quotes (including curly)
+         .replace(/["'\u201C\u201D]+$/,'')   // remove closing quotes
+         .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g,'') // strip control chars
+         .trim()
+      );
+
+      if(cols.length < 1) continue;
+
+      let name  = cols[0] || '';
+      let phone = (cols[1] || '').replace(/\D/g,'');  // digits only
+      let lang  = (cols[2] || 'en').toLowerCase().trim();
+
+      // Validate lang code
+      if(!['en','ta','ml','kn','hi'].includes(lang)) lang = 'en';
+
+      if(name){ addRow(name, phone, lang); count++; }
     }
-    toast(`✅ ${count} students imported!`);
+
+    if(count === 0){
+      toast('No valid students found. Check CSV format.','#ff6584');
+    } else {
+      toast('✅ '+count+' students imported!');
+    }
+  }
+
+  // Try UTF-8 first
+  const r = new FileReader();
+  r.onload = e => {
+    let text = e.target.result;
+    // Check if result has junk (BOM read as latin1 looks like Ã¯Â»Â¿)
+    if(text.charCodeAt(0) > 127 && text.charCodeAt(0) < 256){
+      // Likely wrong encoding — retry as UTF-8 via ArrayBuffer
+      const r2 = new FileReader();
+      r2.onload = e2 => {
+        try{
+          text = new TextDecoder('utf-8').decode(e2.target.result);
+        }catch(err){
+          try{ text = new TextDecoder('windows-1252').decode(e2.target.result); }catch(err2){}
+        }
+        parseAndLoad(text);
+      };
+      r2.readAsArrayBuffer(file);
+    } else {
+      parseAndLoad(text);
+    }
   };
-  r.readAsText(file);
+  r.readAsText(file, 'utf-8');
 }
 
 // ══════════════════════
@@ -730,7 +829,7 @@ function saveUrl(){
 // ══════════════════════
 // GENERATE LINKS + AUTO SEND WHATSAPP
 // ══════════════════════
-function generateLinks(){
+async function generateLinks(){
   if(!ST.questions.length){ toast('Upload questions CSV first!','#ff6584'); switchTab('csv'); return; }
   if(!FB_URL){ toast('Set up Firebase Database first!','#ff6584'); switchTab('db'); return; }
   const students = getStudents();
@@ -743,31 +842,55 @@ function generateLinks(){
       '<div style="background:rgba(255,101,132,.1);border:2px solid var(--accent2);border-radius:11px;padding:20px;text-align:center">'
       +'<div style="font-size:1.8rem;margin-bottom:7px">📵</div>'
       +'<h3 style="color:var(--accent2);margin-bottom:5px">Local file — cannot open on phones</h3>'
-      +'<p class="muted">Host on GitHub Pages first, paste the URL in 🔗 Links tab Step 1, then generate.</p>'
+      +'<p class="muted">Host on GitHub Pages first, paste the URL in 🔗 Links tab, then generate.</p>'
       +'</div>';
     return;
   }
 
   const el = document.getElementById('links-out');
-  const withPhone = students.filter(function(s){ return s.phone && s.phone.length >= 7; }).length;
+  el.innerHTML = '<div style="padding:20px;text-align:center"><span class="spin" style="border-color:rgba(108,99,255,.3);border-top-color:var(--accent)"></span><p style="margin-top:9px;color:var(--muted)">Saving quizzes to database...</p></div>';
+
+  // Build quiz data for each student
+  const sessionId = 'q'+Date.now();
+  const quizList  = [];
+
+  for(let idx=0; idx<students.length; idx++){
+    const {name, phone, lang} = students[idx];
+    // Clean qid — only alphanumeric + underscore (Firebase key rule)
+    const qid = sessionId+'_'+name.replace(/[^a-zA-Z0-9]/g,'')+'_'+lang+'_'+idx;
+    const url  = base+'?quiz='+encQ(name, lang, qid, FB_URL);
+
+    // Save questions to Firebase for this student
+    const ok = await fbSaveQuiz(FB_URL, qid, name, lang, ST.questions);
+    if(!ok){
+      el.innerHTML = '<div style="background:rgba(255,101,132,.1);border:2px solid var(--accent2);border-radius:11px;padding:20px;text-align:center">'
+        +'<div style="font-size:1.8rem;margin-bottom:7px">❌</div>'
+        +'<h3 style="color:var(--accent2);margin-bottom:5px">Failed to save quiz to database</h3>'
+        +'<p class="muted">Check your Firebase connection in ☁ Database tab and try again.</p>'
+        +'</div>';
+      return;
+    }
+    quizList.push({name, phone, lang, qid, url});
+  }
+
+  // All saved — now render links
+  const withPhone = quizList.filter(function(s){ return s.phone && s.phone.length >= 7; }).length;
   el.innerHTML =
     '<div style="background:rgba(0,212,170,.07);border:1px solid var(--green);border-radius:9px;padding:11px 14px;margin-bottom:14px">'
-    +'<p style="color:var(--green);font-weight:700;font-size:.88rem">✅ '+students.length+' links generated — '+withPhone+' WhatsApp messages will open automatically</p>'
-    +'<p class="muted" style="font-size:.79rem;margin-top:3px">Each student gets questions in their own language. Allow popups if browser asks.</p>'
+    +'<p style="color:var(--green);font-weight:700;font-size:.88rem">✅ '+quizList.length+' links ready — quiz saved to database</p>'
+    +'<p class="muted" style="font-size:.79rem;margin-top:3px">'+withPhone+' WhatsApp messages will open automatically. Allow popups if asked.</p>'
     +'</div>';
 
-  students.forEach(function(student, idx){
+  quizList.forEach(function(student, idx){
     var name  = student.name;
     var phone = student.phone;
     var lang  = student.lang;
-    var qid   = name.replace(/\W/g,'')+'_'+lang+'_'+Date.now()+'_'+idx;
-    var encoded = encQ(name, lang, ST.questions, qid, FB_URL);
-    var url   = base+'?quiz='+encoded;
+    var url   = student.url;
+    var qid   = student.qid;
     var l     = LANGS[lang]||LANGS.en;
-    var qrId  = 'qr_'+qid;
+    var qrId  = 'qr_'+idx;
     var hasPhone = phone && phone.length >= 7;
 
-    // Build card HTML — NO inline onclick with variables (use data attributes instead)
     var card = document.createElement('div');
     card.className = 'link-card';
     card.innerHTML =
@@ -776,11 +899,11 @@ function generateLinks(){
           +'<span class="lc-name">'+l.flag+' '+name+'</span>'
           +(hasPhone
             ? '<span class="muted" style="font-size:.78rem;margin-left:8px">📱 +'+phone+'</span>'
-            : '<span style="font-size:.75rem;color:var(--accent2);margin-left:8px">⚠️ No phone number</span>')
+            : '<span style="font-size:.75rem;color:var(--accent2);margin-left:8px">⚠️ No phone</span>')
         +'</div>'
         +'<div class="flex">'
           +'<span class="lang-chip '+l.chip+'">'+l.name+'</span>'
-          +'<span class="s-pend" id="st_'+qid+'">⏳ Pending</span>'
+          +'<span class="s-pend">⏳ Pending</span>'
         +'</div>'
       +'</div>'
       +'<div style="background:rgba(108,99,255,.06);border:1px solid var(--border);border-radius:7px;padding:7px 11px;margin-bottom:9px;font-size:.78rem;color:var(--muted)">'
@@ -789,13 +912,13 @@ function generateLinks(){
       +'<div class="lc-grid">'
         +'<div>'
           +'<label style="margin-bottom:4px">Quiz Link</label>'
-          +'<div class="lc-url" id="u_'+qid+'">'+url+'</div>'
+          +'<div class="lc-url" id="u_'+idx+'">'+url+'</div>'
           +'<div class="flex" style="margin-top:7px">'
-            +'<button class="btn btn-accent btn-sm" id="copy_'+qid+'">📋 Copy</button>'
+            +'<button class="btn btn-accent btn-sm" id="copy_'+idx+'">📋 Copy</button>'
             +(hasPhone
-              ? '<button class="btn btn-green btn-sm" id="wa_'+qid+'">💬 Resend WhatsApp</button>'
-              : '<button class="btn btn-ghost btn-sm" id="wa_'+qid+'">💬 WhatsApp</button>')
-            +'<button class="btn btn-ghost btn-sm" id="test_'+qid+'">🔗 Test</button>'
+              ? '<button class="btn btn-green btn-sm" id="wa_'+idx+'">💬 Resend WhatsApp</button>'
+              : '<button class="btn btn-ghost btn-sm" id="wa_'+idx+'">💬 WhatsApp</button>')
+            +'<button class="btn btn-ghost btn-sm" id="test_'+idx+'">🔗 Test</button>'
           +'</div>'
         +'</div>'
         +'<div>'
@@ -807,14 +930,16 @@ function generateLinks(){
 
     el.appendChild(card);
 
-    // Attach button events safely (no inline onclick)
-    (function(q, p, n, lg, u){
-      document.getElementById('copy_'+q).onclick = function(){ copyLinkUrl(u); };
-      document.getElementById('test_'+q).onclick = function(){ window.open(u,'_blank'); };
-      document.getElementById('wa_'+q).onclick   = function(){ openWA(p||'', n, lg, u); };
-    })(qid, phone, name, lang, url);
+    // Safe event binding
+    (function(i, p, n, lg, u){
+      document.getElementById('copy_'+i).onclick = function(){ copyLinkUrl(u); };
+      document.getElementById('test_'+i).onclick = function(){ window.open(u,'_blank'); };
+      document.getElementById('wa_'+i).onclick   = function(){ openWA(p||'', n, lg, u); };
+    })(idx, phone, name, lang, url);
 
-    // Auto-open WhatsApp for students with phone numbers
+    setTimeout(function(){ makeQR(qrId, url); }, 80);
+
+    // Auto-open WhatsApp
     if(hasPhone){
       (function(p, n, lg, u, delay){
         setTimeout(function(){
@@ -822,12 +947,11 @@ function generateLinks(){
         }, delay);
       })(phone, name, lang, url, 800*(idx+1));
     }
-
-    setTimeout(function(){ makeQR(qrId, url); }, 80);
   });
 
-  toast('⚡ Links ready! WhatsApp messages opening...');
+  toast('✅ Links ready!');
 }
+
 
 function copyLinkUrl(url){
   navigator.clipboard.writeText(url).then(function(){ toast('Link copied!'); }).catch(function(){ prompt('Copy this link:',url); });
@@ -863,6 +987,53 @@ function makeQR(id, url){
 }
 function copyLink(qid){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; navigator.clipboard.writeText(u).then(function(){toast('Link copied!');}).catch(function(){prompt('Copy:',u);}); }
 function testLink(qid){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(u) window.open(u,'_blank'); }
+// ══════════════════════
+// STUDENT QUIZ INIT
+// ══════════════════════
+async function initStudent(encoded){
+  const d = decQ(encoded);
+  if(!d || !d.qid || !d.fbUrl){
+    document.getElementById('quiz-meta').innerHTML =
+      '<span style="color:var(--accent2)">❌ Invalid link. Ask your teacher to resend.</span>';
+    return;
+  }
+
+  // Already submitted on this device?
+  const prev = localStorage.getItem(DONE_PFX + d.qid);
+  if(prev){ try{ showDone(JSON.parse(prev)); return; }catch(e){} }
+
+  // Show loading
+  document.getElementById('quiz-meta').textContent = 'Loading quiz...';
+
+  // Fetch questions from Firebase
+  const quiz = await fbLoadQuiz(d.fbUrl, d.qid);
+  if(!quiz || !quiz.questions || !quiz.questions.length){
+    document.getElementById('quiz-meta').innerHTML =
+      '<span style="color:var(--accent2)">❌ Quiz not found. Ask your teacher to regenerate the link.</span>';
+    return;
+  }
+
+  QD = {
+    name:  d.name || quiz.name,
+    lang:  d.lang || quiz.lang,
+    qs:    quiz.questions,
+    qid:   d.qid,
+    fbUrl: d.fbUrl
+  };
+
+  const l = LANGS[QD.lang] || LANGS.en;
+  const i = I18[QD.lang]   || I18.en;
+
+  document.getElementById('quiz-meta').textContent = l.flag + ' Quiz — ' + QD.name;
+  document.querySelector('.quiz-shell').classList.add(l.cls);
+  document.getElementById('lbl-det').textContent   = i.det;
+  document.getElementById('lbl-name').textContent  = i.name;
+  document.getElementById('lbl-email').textContent = i.email;
+  document.getElementById('s-name').value          = QD.name;
+  document.getElementById('sub-lbl').textContent   = i.sub;
+  document.getElementById('name-entry').style.display = 'block';
+}
+
 function startQuiz(){
   const name = document.getElementById('s-name').value.trim();
   if(!name){ toast('Please enter your name','#ff6584'); return; }

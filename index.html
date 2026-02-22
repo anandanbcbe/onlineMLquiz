@@ -387,7 +387,7 @@ function tr(x,l){return(l!=='en'&&TR[l]&&TR[l][x])||x;}
 // ══════════════════════
 let FB_URL = ''; // e.g. https://project-rtdb.firebaseio.com
 
-function fbPath(){ return FB_URL.replace(/\/$/,'') + '/quizresults.json'; }
+function fbPath(){ return FB_URL.replace(/\/+$/,'').replace(/\/quizresults\.json$/,'') + '/quizresults.json'; }
 
 async function fbRead(){
   try{
@@ -427,7 +427,7 @@ function loadLS(){
   try{
     const d = JSON.parse(localStorage.getItem(LS_KEY)||'{}');
     if(d.questions) ST.questions = d.questions;
-    FB_URL = localStorage.getItem('qb7_fburl') || '';
+    FB_URL = (localStorage.getItem('qb7_fburl') || '').replace(/\/+$/,'');
   }catch(e){}
 }
 function saveLS(){ try{localStorage.setItem(LS_KEY, JSON.stringify(ST));}catch(e){} }
@@ -511,34 +511,50 @@ function switchMain(id){
 // DB SAVE & TEST
 // ══════════════════════
 async function saveDB(){
-  const val = document.getElementById('fb-url').value.trim().replace(/\/$/,'');
-  if(!val || !val.startsWith('https://')){
-    toast('Enter a valid Firebase URL (starts with https://)','#ff6584'); return;
+  const raw = document.getElementById('fb-url').value.trim();
+  const val = raw.replace(/\/+$/,''); // remove trailing slashes
+  if(!val){
+    toast('Please paste your Firebase URL first','#ff6584'); return;
+  }
+  if(!val.startsWith('https://')){
+    toast('URL must start with https://','#ff6584'); return;
   }
   const st = document.getElementById('db-status');
-  st.innerHTML = '<span class="spin"></span> Testing...';
+  st.innerHTML = '<span class="spin"></span> Testing connection...';
   FB_URL = val;
+
   try{
-    // Write a test value then read it back
-    const testSub = {_test: true, t: Date.now()};
-    const wRes = await fetch(val+'/qbtest.json', {
-      method:'PUT',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(testSub)
-    });
-    if(wRes.ok){
-      localStorage.setItem('qb7_fburl', val);
-      st.innerHTML = '<span style="color:var(--green);font-weight:700">✅ Connected! Database is working. Go to 👥 Students tab next.</span>';
-      toast('✅ Firebase connected!');
-    } else {
-      const err = await wRes.text();
+    // Step 1: simple GET test (read null is fine)
+    const readRes = await fetch(val + '/qbtest.json');
+    if(!readRes.ok){
+      const txt = await readRes.text();
       FB_URL = '';
-      st.innerHTML = `<span style="color:var(--accent2);font-weight:700">❌ Failed (${wRes.status}). Make sure database is in <strong>Test Mode</strong>.</span>`;
-      toast('Connection failed','#ff6584');
+      st.innerHTML = '<span style="color:var(--accent2);font-weight:700">❌ Read failed ('+readRes.status+'): '+txt+'</span>';
+      return;
     }
+
+    // Step 2: write test
+    const writeRes = await fetch(val + '/qbtest.json', {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ok:true, t: Date.now()})
+    });
+    if(!writeRes.ok){
+      const txt = await writeRes.text();
+      FB_URL = '';
+      st.innerHTML = '<span style="color:var(--accent2);font-weight:700">❌ Write failed ('+writeRes.status+'): '+txt+'</span>';
+      return;
+    }
+
+    // All good!
+    localStorage.setItem('qb7_fburl', val);
+    st.innerHTML = '<span style="color:var(--green);font-weight:700">✅ Connected! Firebase is working. Go to 👥 Students tab next.</span>';
+    toast('✅ Firebase connected!');
+
   }catch(e){
+    // Show the REAL error message
     FB_URL = '';
-    st.innerHTML = '<span style="color:var(--accent2);font-weight:700">❌ Network error. Check the URL and try again.</span>';
+    st.innerHTML = '<span style="color:var(--accent2);font-weight:700">❌ Error: '+e.message+'<br><span style="font-weight:400;font-size:.8rem">URL used: '+val+'</span></span>';
   }
 }
 

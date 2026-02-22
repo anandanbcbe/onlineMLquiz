@@ -45,7 +45,7 @@ th{background:rgba(108,99,255,.15);color:var(--accent);padding:8px 11px;text-ali
 td{padding:8px 11px;border-bottom:1px solid var(--border);vertical-align:top}
 tr:hover td{background:rgba(255,255,255,.02)}
 .cbadge{display:inline-block;padding:2px 7px;border-radius:20px;background:rgba(0,212,170,.15);color:var(--green);font-size:.73rem;font-weight:700}
-.stu-row{display:grid;grid-template-columns:1fr 155px auto;gap:9px;align-items:end;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 13px;margin-bottom:7px}
+.stu-row{display:grid;grid-template-columns:1fr 140px 140px auto;gap:9px;align-items:end;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 13px;margin-bottom:7px}
 .stu-row input,.stu-row select{margin:0}
 .link-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px;margin-bottom:11px}
 .lc-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px;margin-bottom:9px}
@@ -116,7 +116,7 @@ code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-
 @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 @media(max-width:560px){
   .t-nav{padding:11px 13px;flex-direction:column;gap:8px}
-  .t-body{padding:16px 12px}.stu-row{grid-template-columns:1fr}
+  .t-body{padding:16px 12px}.stu-row{grid-template-columns:1fr 1fr}
   .info-grid{grid-template-columns:1fr}.lc-grid{grid-template-columns:1fr}
 }
 </style>
@@ -251,7 +251,32 @@ code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-
         <!-- STUDENTS TAB -->
         <div class="spanel" id="tab-students">
           <div class="card">
-            <div class="card-title"><span class="ico">👥</span>Students & Languages</div>
+            <div class="card-title"><span class="ico">👥</span>Students — Name, Phone & Language</div>
+            <p class="muted" style="margin-bottom:14px">Add each student's name, WhatsApp phone number and their language. When you click Generate Links, the quiz link will be <strong style="color:var(--text)">automatically sent to each student on WhatsApp.</strong></p>
+
+            <!-- Import from CSV option -->
+            <div style="background:rgba(108,99,255,.07);border:1px solid var(--accent);border-radius:9px;padding:12px 14px;margin-bottom:14px">
+              <p style="font-weight:700;font-size:.86rem;margin-bottom:6px">📥 Import Students from CSV</p>
+              <p class="muted" style="font-size:.79rem;margin-bottom:8px">CSV format: <code>name, phone, language</code> &nbsp;|&nbsp; language = en / ta / ml / kn / hi</p>
+              <div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px;font-family:monospace;font-size:.75rem;color:var(--muted);margin-bottom:8px">
+                name,phone,language<br>
+                Priya,919876543210,ta<br>
+                Anand,919123456789,ml<br>
+                Ravi,918765432109,kn
+              </div>
+              <input type="file" id="stu-csv" accept=".csv" onchange="importStudentCSV(this.files[0])" style="display:none">
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('stu-csv').click()">📂 Import CSV</button>
+              <button class="btn btn-ghost btn-sm" onclick="loadSampleStudents()">⚡ Load Sample</button>
+            </div>
+
+            <!-- Column headers -->
+            <div style="display:grid;grid-template-columns:1fr 140px 140px auto;gap:9px;padding:0 13px;margin-bottom:4px">
+              <span style="font-size:.71rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Student Name</span>
+              <span style="font-size:.71rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px">WhatsApp Number</span>
+              <span style="font-size:.71rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Language</span>
+              <span></span>
+            </div>
+
             <div id="student-list"></div>
             <button class="btn btn-ghost btn-sm mt" onclick="addRow()">+ Add Student</button>
           </div>
@@ -286,9 +311,9 @@ code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-
             <p id="url-warn" style="color:var(--accent2);font-size:.77rem;margin-top:4px;display:none">⚠️ Looks like a local path!</p>
           </div>
           <div class="card">
-            <div class="card-title"><span class="ico">🔗</span>Generate Student Links</div>
-            <p class="muted" style="margin-bottom:12px">Quiz questions + database connection are encoded inside each link. Students tap → answer → submit → results appear instantly in your dashboard.</p>
-            <button class="btn btn-accent" onclick="generateLinks()">⚡ Generate Links</button>
+            <div class="card-title"><span class="ico">🔗</span>Generate & Auto-Send Links</div>
+            <p class="muted" style="margin-bottom:12px">Click below — quiz links are generated for each student <strong style="color:var(--text)">and automatically sent to their WhatsApp number.</strong> Each student gets questions in their own language.</p>
+            <button class="btn btn-accent" onclick="generateLinks()">⚡ Generate & Send on WhatsApp</button>
             <div id="links-out" class="mt"></div>
           </div>
         </div>
@@ -626,23 +651,59 @@ Who wrote Romeo and Juliet?,Dickens,Twain,Shakespeare,Austen,C`);
 let si=0;
 function buildStudents(){
   if(!document.getElementById('student-list').children.length)
-    [['Priya','ta'],['Anand','ml'],['Ravi','kn'],['Meena','hi'],['John','en']].forEach(([n,l])=>addRow(n,l));
+    loadSampleStudents();
 }
-function addRow(name='', lang='en'){
+function loadSampleStudents(){
+  document.getElementById('student-list').innerHTML='';
+  si=0;
+  [
+    ['Priya',   '919876543210','ta'],
+    ['Anand',   '919123456789','ml'],
+    ['Ravi',    '918765432109','kn'],
+    ['Meena',   '917654321098','hi'],
+    ['John',    '916543210987','en']
+  ].forEach(([n,p,l])=>addRow(n,p,l));
+}
+function addRow(name='', phone='', lang='en'){
   const el=document.getElementById('student-list');
   const id=++si; const div=document.createElement('div');
   div.className='stu-row'; div.id='sr_'+id;
-  div.innerHTML=`<div><label>Name</label><input type="text" id="sn_${id}" value="${name}" placeholder="Student name" style="margin:0"/></div>
-    <div><label>Language</label><select id="sl_${id}" style="margin:0">${LOPT}</select></div>
-    <button class="btn btn-ghost btn-sm" style="margin-top:18px" onclick="document.getElementById('sr_${id}').remove()">✕</button>`;
+  div.innerHTML=`
+    <div><input type="text" id="sn_${id}" value="${name}" placeholder="Student name" style="margin:0"/></div>
+    <div><input type="tel"  id="sp_${id}" value="${phone}" placeholder="91XXXXXXXXXX" style="margin:0"/></div>
+    <div><select id="sl_${id}" style="margin:0">${LOPT}</select></div>
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('sr_${id}').remove()">✕</button>`;
   el.appendChild(div);
   if(lang) setTimeout(()=>{ const s=document.getElementById('sl_'+id); if(s) s.value=lang; }, 0);
 }
 function getStudents(){
   return [...document.querySelectorAll('[id^="sr_"]')].map(r=>{
     const id=r.id.replace('sr_','');
-    return {name:document.getElementById('sn_'+id)?.value.trim(), lang:document.getElementById('sl_'+id)?.value};
+    const name  = document.getElementById('sn_'+id)?.value.trim();
+    const phone = document.getElementById('sp_'+id)?.value.trim().replace(/\D/g,''); // digits only
+    const lang  = document.getElementById('sl_'+id)?.value;
+    return {name, phone, lang};
   }).filter(s=>s.name);
+}
+
+// Import students from CSV (name, phone, language)
+function importStudentCSV(file){
+  if(!file) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const lines=e.target.result.trim().split('\n').filter(l=>l.trim());
+    const start=lines[0].toLowerCase().includes('name')?1:0;
+    document.getElementById('student-list').innerHTML=''; si=0;
+    let count=0;
+    for(let i=start;i<lines.length;i++){
+      const cols=lines[i].split(',').map(s=>s.trim().replace(/^"|"$/g,''));
+      if(cols.length<2) continue;
+      const [name,phone,lang='en']=cols;
+      if(name){ addRow(name, phone||'', lang.toLowerCase()); count++; }
+    }
+    toast(`✅ ${count} students imported!`);
+  };
+  r.readAsText(file);
 }
 
 // ══════════════════════
@@ -658,7 +719,7 @@ function saveUrl(){
 }
 
 // ══════════════════════
-// GENERATE LINKS
+// GENERATE LINKS + AUTO SEND WHATSAPP
 // ══════════════════════
 function generateLinks(){
   if(!ST.questions.length){ toast('Upload CSV first!','#ff6584'); switchTab('csv'); return; }
@@ -669,54 +730,98 @@ function generateLinks(){
   const cur = location.href.split('?')[0];
   const base = savedUrl || cur;
   if(cur.startsWith('file://')&&!savedUrl){
-    document.getElementById('links-out').innerHTML=`<div style="background:rgba(255,101,132,.1);border:2px solid var(--accent2);border-radius:11px;padding:20px;text-align:center"><div style="font-size:1.8rem;margin-bottom:7px">📵</div><h3 style="color:var(--accent2);margin-bottom:5px">Local file — can't open on phones</h3><p class="muted">Host online first, paste URL above.</p></div>`;
+    document.getElementById('links-out').innerHTML='<div style="background:rgba(255,101,132,.1);border:2px solid var(--accent2);border-radius:11px;padding:20px;text-align:center"><div style="font-size:1.8rem;margin-bottom:7px">📵</div><h3 style="color:var(--accent2);margin-bottom:5px">Local file — cannot open on phones</h3><p class="muted">Host online first, paste URL above.</p></div>';
     return;
   }
+
   const el = document.getElementById('links-out');
-  el.innerHTML = '<p class="muted" style="margin-bottom:12px;font-size:.81rem">📱 Each link has full quiz + database. Student taps → answers → submits → appears in Results tab.</p>';
-  students.forEach(({name, lang})=>{
-    const qid = name.replace(/\W/g,'')+'_'+lang+'_'+Date.now();
+  el.innerHTML = '';
+
+  const withPhone = students.filter(s=>s.phone&&s.phone.length>=7).length;
+  el.innerHTML = '<div style="background:rgba(0,212,170,.07);border:1px solid var(--green);border-radius:9px;padding:11px 14px;margin-bottom:14px">'
+    + '<p style="color:var(--green);font-weight:700;font-size:.88rem">✅ ' + students.length + ' links generated — ' + withPhone + ' WhatsApp messages sending automatically</p>'
+    + '<p class="muted" style="font-size:.79rem;margin-top:3px">Each student gets questions in their own language. Allow popups if browser asks.</p>'
+    + '</div>';
+
+  students.forEach(function(student, idx){
+    const name = student.name;
+    const phone = student.phone;
+    const lang = student.lang;
+    const qid = name.replace(/\W/g,'')+'_'+lang+'_'+Date.now()+'_'+idx;
     const encoded = encQ(name, lang, ST.questions, qid, FB_URL);
     const url = base+'?quiz='+encoded;
     const l = LANGS[lang]||LANGS.en;
     const qrId = 'qr_'+qid;
-    el.innerHTML += `
-    <div class="link-card">
-      <div class="lc-top">
-        <span class="lc-name">${l.flag} ${name}</span>
-        <div class="flex"><span class="lang-chip ${l.chip}">${l.name}</span><span class="s-pend" id="st_${qid}">⏳ Pending</span></div>
-      </div>
-      <div class="lc-grid">
-        <div>
-          <label style="margin-bottom:4px">Student Quiz Link</label>
-          <div class="lc-url" id="u_${qid}">${url}</div>
-          <div class="flex" style="margin-top:7px">
-            <button class="btn btn-accent btn-sm" onclick="copyLink('${qid}')">📋 Copy</button>
-            <button class="btn btn-ghost btn-sm" onclick="testLink('${qid}')">🔗 Test</button>
-            <button class="btn btn-ghost btn-sm" onclick="waLink('${qid}','${name}','${lang}')">💬 WhatsApp</button>
-          </div>
-        </div>
-        <div>
-          <label style="margin-bottom:4px">QR Code</label>
-          <div class="qr-box" id="${qrId}"><span class="muted" style="font-size:.7rem;padding:5px">Loading...</span></div>
-          <p class="muted" style="font-size:.69rem;margin-top:3px;text-align:center">Scan on phone</p>
-        </div>
-      </div>
-    </div>`;
-    setTimeout(()=>makeQR(qrId, url), 80);
+    const hasPhone = phone && phone.length >= 7;
+    const q1preview = tr(ST.questions[0].q, lang);
+    const preview = q1preview.length > 45 ? q1preview.substring(0,45)+'...' : q1preview;
+    const phoneDisplay = hasPhone
+      ? '<span class="muted" style="font-size:.78rem;margin-left:8px">📱 +'+phone+'</span>'
+      : '<span style="font-size:.75rem;color:var(--accent2);margin-left:8px">⚠️ No phone</span>';
+    const waBtnHtml = hasPhone
+      ? '<button class="btn btn-green btn-sm" onclick="sendWA(''+phone+'',''+qid+'',''+lang+'',''+name+'')">💬 Resend WA</button>'
+      : '<button class="btn btn-ghost btn-sm" onclick="sendWANoPhone(''+qid+'',''+lang+'',''+name+'')">💬 WhatsApp</button>';
+
+    el.innerHTML += '<div class="link-card">'
+      + '<div class="lc-top">'
+      + '<div><span class="lc-name">'+l.flag+' '+name+'</span>'+phoneDisplay+'</div>'
+      + '<div class="flex"><span class="lang-chip '+l.chip+'">'+l.name+'</span><span class="s-pend" id="st_'+qid+'">⏳ Pending</span></div>'
+      + '</div>'
+      + '<div style="background:rgba(108,99,255,.06);border:1px solid var(--border);border-radius:7px;padding:7px 11px;margin-bottom:9px;font-size:.78rem;color:var(--muted)">'
+      + '📝 <strong style="color:var(--text)">'+ST.questions.length+' questions</strong> in <strong style="color:var(--yellow)">'+l.name+'</strong> &nbsp;·&nbsp; Q1: "'+preview+'"'
+      + '</div>'
+      + '<div class="lc-grid">'
+      + '<div>'
+      + '<label style="margin-bottom:4px">Quiz Link</label>'
+      + '<div class="lc-url" id="u_'+qid+'">'+url+'</div>'
+      + '<div class="flex" style="margin-top:7px">'
+      + '<button class="btn btn-accent btn-sm" onclick="copyLink(''+qid+'')">📋 Copy</button>'
+      + '<button class="btn btn-ghost btn-sm" onclick="testLink(''+qid+'')">🔗 Test</button>'
+      + waBtnHtml
+      + '</div></div>'
+      + '<div><label style="margin-bottom:4px">QR Code</label>'
+      + '<div class="qr-box" id="'+qrId+'"><span class="muted" style="font-size:.7rem;padding:5px">Loading...</span></div>'
+      + '<p class="muted" style="font-size:.69rem;margin-top:3px;text-align:center">Scan on phone</p>'
+      + '</div></div></div>';
+
+    // Auto-open WhatsApp for students with phone numbers
+    if(hasPhone){
+      (function(p, n, l2, u2, delay){
+        setTimeout(function(){
+          const msg = buildWAMessage(n, l2, u2);
+          window.open('https://wa.me/'+p+'?text='+encodeURIComponent(msg), '_blank');
+        }, delay);
+      })(phone, name, lang, url, 600*(idx+1));
+    }
+
+    setTimeout(function(){ makeQR(qrId, url); }, 80);
   });
-  toast('Links ready! Share with students.');
+
+  toast('⚡ Links ready! WhatsApp messages sending...');
 }
+
+function buildWAMessage(name, lang, url){
+  const msgs = {
+    en: 'Hello '+name+'! 👋\n\nYour quiz is ready in English.\n\nTap the link below to start:\n'+url+'\n\n📝 Answer all questions and tap Submit when done.',
+    ta: 'வணக்கம் '+name+'! 👋\n\nஉங்கள் வினாடி வினா தமிழில் தயாராக உள்ளது.\n\nகீழே உள்ள இணைப்பை தொட்டு தொடங்கவும்:\n'+url+'\n\n📝 அனைத்து கேள்விகளுக்கும் பதிலளித்து சமர்ப்பி பொத்தானை அழுத்தவும்.',
+    ml: 'ഹലോ '+name+'! 👋\n\nനിങ്ങളുടെ ക്വിസ് മലയാളത്തിൽ തയ്യാറാണ്.\n\nതാഴെയുള്ള ലിങ്ക് ടാപ്പ് ചെയ്ത് ആരംഭിക്കുക:\n'+url+'\n\n📝 എല്ലാ ചോദ്യങ്ങൾക്കും ഉത്തരം നൽകി സബ്മിറ്റ് ചെയ്യുക.',
+    kn: 'ನಮಸ್ಕಾರ '+name+'! 👋\n\nನಿಮ್ಮ ಕ್ವಿಜ್ ಕನ್ನಡದಲ್ಲಿ ಸಿದ್ಧವಾಗಿದೆ.\n\nಕೆಳಗಿನ ಲಿಂಕ್ ಅನ್ನು ತಟ್ಟಿ ಪ್ರಾರಂಭಿಸಿ:\n'+url+'\n\n📝 ಎಲ್ಲಾ ಪ್ರಶ್ನೆಗಳಿಗೆ ಉತ್ತರಿಸಿ ಸಲ್ಲಿಸು ಗುಂಡಿಯನ್ನು ಒತ್ತಿ.',
+    hi: 'नमस्ते '+name+'! 👋\n\nआपका क्विज़ हिंदी में तैयार है।\n\nनीचे दिए लिंक को टैप करके शुरू करें:\n'+url+'\n\n📝 सभी प्रश्नों के उत्तर देकर सबमिट बटन दबाएं।'
+  };
+  return msgs[lang] || msgs.en;
+}
+
 function makeQR(id, url){
   const el=document.getElementById(id); if(!el) return;
   const img=new Image(); img.width=108; img.height=108; img.style.borderRadius='5px';
-  img.src=`https://api.qrserver.com/v1/create-qr-code/?size=108x108&data=${encodeURIComponent(url)}&margin=5`;
-  img.onerror=()=>{ el.innerHTML='<span class="muted" style="font-size:.7rem;padding:6px">QR needs<br>internet</span>'; };
+  img.src='https://api.qrserver.com/v1/create-qr-code/?size=108x108&data='+encodeURIComponent(url)+'&margin=5';
+  img.onerror=function(){ el.innerHTML='<span class="muted" style="font-size:.7rem;padding:6px">QR needs<br>internet</span>'; };
   el.innerHTML=''; el.appendChild(img);
 }
-function copyLink(qid){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; navigator.clipboard.writeText(u).then(()=>toast('Link copied!')).catch(()=>prompt('Copy:',u)); }
+function copyLink(qid){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; navigator.clipboard.writeText(u).then(function(){toast('Link copied!');}).catch(function(){prompt('Copy:',u);}); }
 function testLink(qid){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(u) window.open(u,'_blank'); }
-function waLink(qid, name, lang){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; const l=LANGS[lang]||LANGS.en; window.open(`https://wa.me/?text=${encodeURIComponent(l.flag+' Hello '+name+'! Your quiz is ready in '+l.name+'.\n\nOpen this link:\n'+u)}`,'_blank'); }
+function sendWA(phone, qid, lang, name){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; const msg=buildWAMessage(name,lang,u); window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank'); }
+function sendWANoPhone(qid, lang, name){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; const msg=buildWAMessage(name,lang,u); window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }
 
 // ══════════════════════
 // STUDENT QUIZ

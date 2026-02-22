@@ -731,7 +731,7 @@ function saveUrl(){
 // GENERATE LINKS + AUTO SEND WHATSAPP
 // ══════════════════════
 function generateLinks(){
-  if(!ST.questions.length){ toast('Upload CSV first!','#ff6584'); switchTab('csv'); return; }
+  if(!ST.questions.length){ toast('Upload questions CSV first!','#ff6584'); switchTab('csv'); return; }
   if(!FB_URL){ toast('Set up Firebase Database first!','#ff6584'); switchTab('db'); return; }
   const students = getStudents();
   if(!students.length){ toast('Add students first','#ff6584'); return; }
@@ -739,86 +739,120 @@ function generateLinks(){
   const cur = location.href.split('?')[0];
   const base = savedUrl || cur;
   if(cur.startsWith('file://')&&!savedUrl){
-    document.getElementById('links-out').innerHTML='<div style="background:rgba(255,101,132,.1);border:2px solid var(--accent2);border-radius:11px;padding:20px;text-align:center"><div style="font-size:1.8rem;margin-bottom:7px">📵</div><h3 style="color:var(--accent2);margin-bottom:5px">Local file — cannot open on phones</h3><p class="muted">Host online first, paste URL above.</p></div>';
+    document.getElementById('links-out').innerHTML =
+      '<div style="background:rgba(255,101,132,.1);border:2px solid var(--accent2);border-radius:11px;padding:20px;text-align:center">'
+      +'<div style="font-size:1.8rem;margin-bottom:7px">📵</div>'
+      +'<h3 style="color:var(--accent2);margin-bottom:5px">Local file — cannot open on phones</h3>'
+      +'<p class="muted">Host on GitHub Pages first, paste the URL in 🔗 Links tab Step 1, then generate.</p>'
+      +'</div>';
     return;
   }
 
   const el = document.getElementById('links-out');
-  el.innerHTML = '';
-
-  const withPhone = students.filter(s=>s.phone&&s.phone.length>=7).length;
-  el.innerHTML = '<div style="background:rgba(0,212,170,.07);border:1px solid var(--green);border-radius:9px;padding:11px 14px;margin-bottom:14px">'
-    + '<p style="color:var(--green);font-weight:700;font-size:.88rem">✅ ' + students.length + ' links generated — ' + withPhone + ' WhatsApp messages sending automatically</p>'
-    + '<p class="muted" style="font-size:.79rem;margin-top:3px">Each student gets questions in their own language. Allow popups if browser asks.</p>'
-    + '</div>';
+  const withPhone = students.filter(function(s){ return s.phone && s.phone.length >= 7; }).length;
+  el.innerHTML =
+    '<div style="background:rgba(0,212,170,.07);border:1px solid var(--green);border-radius:9px;padding:11px 14px;margin-bottom:14px">'
+    +'<p style="color:var(--green);font-weight:700;font-size:.88rem">✅ '+students.length+' links generated — '+withPhone+' WhatsApp messages will open automatically</p>'
+    +'<p class="muted" style="font-size:.79rem;margin-top:3px">Each student gets questions in their own language. Allow popups if browser asks.</p>'
+    +'</div>';
 
   students.forEach(function(student, idx){
-    const name = student.name;
-    const phone = student.phone;
-    const lang = student.lang;
-    const qid = name.replace(/\W/g,'')+'_'+lang+'_'+Date.now()+'_'+idx;
-    const encoded = encQ(name, lang, ST.questions, qid, FB_URL);
-    const url = base+'?quiz='+encoded;
-    const l = LANGS[lang]||LANGS.en;
-    const qrId = 'qr_'+qid;
-    const hasPhone = phone && phone.length >= 7;
-    const q1preview = tr(ST.questions[0].q, lang);
-    const preview = q1preview.length > 45 ? q1preview.substring(0,45)+'...' : q1preview;
-    const phoneDisplay = hasPhone
-      ? '<span class="muted" style="font-size:.78rem;margin-left:8px">📱 +'+phone+'</span>'
-      : '<span style="font-size:.75rem;color:var(--accent2);margin-left:8px">⚠️ No phone</span>';
-    const waBtnHtml = hasPhone
-      ? '<button class="btn btn-green btn-sm" onclick="sendWA(''+phone+'',''+qid+'',''+lang+'',''+name+'')">💬 Resend WA</button>'
-      : '<button class="btn btn-ghost btn-sm" onclick="sendWANoPhone(''+qid+'',''+lang+'',''+name+'')">💬 WhatsApp</button>';
+    var name  = student.name;
+    var phone = student.phone;
+    var lang  = student.lang;
+    var qid   = name.replace(/\W/g,'')+'_'+lang+'_'+Date.now()+'_'+idx;
+    var encoded = encQ(name, lang, ST.questions, qid, FB_URL);
+    var url   = base+'?quiz='+encoded;
+    var l     = LANGS[lang]||LANGS.en;
+    var qrId  = 'qr_'+qid;
+    var hasPhone = phone && phone.length >= 7;
 
-    el.innerHTML += '<div class="link-card">'
-      + '<div class="lc-top">'
-      + '<div><span class="lc-name">'+l.flag+' '+name+'</span>'+phoneDisplay+'</div>'
-      + '<div class="flex"><span class="lang-chip '+l.chip+'">'+l.name+'</span><span class="s-pend" id="st_'+qid+'">⏳ Pending</span></div>'
-      + '</div>'
-      + '<div style="background:rgba(108,99,255,.06);border:1px solid var(--border);border-radius:7px;padding:7px 11px;margin-bottom:9px;font-size:.78rem;color:var(--muted)">'
-      + '📝 <strong style="color:var(--text)">'+ST.questions.length+' questions</strong> in <strong style="color:var(--yellow)">'+l.name+'</strong> &nbsp;·&nbsp; Q1: "'+preview+'"'
-      + '</div>'
-      + '<div class="lc-grid">'
-      + '<div>'
-      + '<label style="margin-bottom:4px">Quiz Link</label>'
-      + '<div class="lc-url" id="u_'+qid+'">'+url+'</div>'
-      + '<div class="flex" style="margin-top:7px">'
-      + '<button class="btn btn-accent btn-sm" onclick="copyLink(''+qid+'')">📋 Copy</button>'
-      + '<button class="btn btn-ghost btn-sm" onclick="testLink(''+qid+'')">🔗 Test</button>'
-      + waBtnHtml
-      + '</div></div>'
-      + '<div><label style="margin-bottom:4px">QR Code</label>'
-      + '<div class="qr-box" id="'+qrId+'"><span class="muted" style="font-size:.7rem;padding:5px">Loading...</span></div>'
-      + '<p class="muted" style="font-size:.69rem;margin-top:3px;text-align:center">Scan on phone</p>'
-      + '</div></div></div>';
+    // Build card HTML — NO inline onclick with variables (use data attributes instead)
+    var card = document.createElement('div');
+    card.className = 'link-card';
+    card.innerHTML =
+      '<div class="lc-top">'
+        +'<div>'
+          +'<span class="lc-name">'+l.flag+' '+name+'</span>'
+          +(hasPhone
+            ? '<span class="muted" style="font-size:.78rem;margin-left:8px">📱 +'+phone+'</span>'
+            : '<span style="font-size:.75rem;color:var(--accent2);margin-left:8px">⚠️ No phone number</span>')
+        +'</div>'
+        +'<div class="flex">'
+          +'<span class="lang-chip '+l.chip+'">'+l.name+'</span>'
+          +'<span class="s-pend" id="st_'+qid+'">⏳ Pending</span>'
+        +'</div>'
+      +'</div>'
+      +'<div style="background:rgba(108,99,255,.06);border:1px solid var(--border);border-radius:7px;padding:7px 11px;margin-bottom:9px;font-size:.78rem;color:var(--muted)">'
+        +'📝 <strong style="color:var(--text)">'+ST.questions.length+' questions</strong> in <strong style="color:var(--yellow)">'+l.name+'</strong>'
+      +'</div>'
+      +'<div class="lc-grid">'
+        +'<div>'
+          +'<label style="margin-bottom:4px">Quiz Link</label>'
+          +'<div class="lc-url" id="u_'+qid+'">'+url+'</div>'
+          +'<div class="flex" style="margin-top:7px">'
+            +'<button class="btn btn-accent btn-sm" id="copy_'+qid+'">📋 Copy</button>'
+            +(hasPhone
+              ? '<button class="btn btn-green btn-sm" id="wa_'+qid+'">💬 Resend WhatsApp</button>'
+              : '<button class="btn btn-ghost btn-sm" id="wa_'+qid+'">💬 WhatsApp</button>')
+            +'<button class="btn btn-ghost btn-sm" id="test_'+qid+'">🔗 Test</button>'
+          +'</div>'
+        +'</div>'
+        +'<div>'
+          +'<label style="margin-bottom:4px">QR Code</label>'
+          +'<div class="qr-box" id="'+qrId+'"><span class="muted" style="font-size:.7rem;padding:5px">Loading...</span></div>'
+          +'<p class="muted" style="font-size:.69rem;margin-top:3px;text-align:center">Scan on phone</p>'
+        +'</div>'
+      +'</div>';
+
+    el.appendChild(card);
+
+    // Attach button events safely (no inline onclick)
+    (function(q, p, n, lg, u){
+      document.getElementById('copy_'+q).onclick = function(){ copyLinkUrl(u); };
+      document.getElementById('test_'+q).onclick = function(){ window.open(u,'_blank'); };
+      document.getElementById('wa_'+q).onclick   = function(){ openWA(p||'', n, lg, u); };
+    })(qid, phone, name, lang, url);
 
     // Auto-open WhatsApp for students with phone numbers
     if(hasPhone){
-      (function(p, n, l2, u2, delay){
+      (function(p, n, lg, u, delay){
         setTimeout(function(){
-          const msg = buildWAMessage(n, l2, u2);
-          window.open('https://wa.me/'+p+'?text='+encodeURIComponent(msg), '_blank');
+          window.open('https://wa.me/'+p+'?text='+encodeURIComponent(buildWAMsg(n,lg,u)), '_blank');
         }, delay);
-      })(phone, name, lang, url, 600*(idx+1));
+      })(phone, name, lang, url, 800*(idx+1));
     }
 
     setTimeout(function(){ makeQR(qrId, url); }, 80);
   });
 
-  toast('⚡ Links ready! WhatsApp messages sending...');
+  toast('⚡ Links ready! WhatsApp messages opening...');
 }
 
-function buildWAMessage(name, lang, url){
-  const msgs = {
-    en: 'Hello '+name+'! 👋\n\nYour quiz is ready in English.\n\nTap the link below to start:\n'+url+'\n\n📝 Answer all questions and tap Submit when done.',
-    ta: 'வணக்கம் '+name+'! 👋\n\nஉங்கள் வினாடி வினா தமிழில் தயாராக உள்ளது.\n\nகீழே உள்ள இணைப்பை தொட்டு தொடங்கவும்:\n'+url+'\n\n📝 அனைத்து கேள்விகளுக்கும் பதிலளித்து சமர்ப்பி பொத்தானை அழுத்தவும்.',
-    ml: 'ഹലോ '+name+'! 👋\n\nനിങ്ങളുടെ ക്വിസ് മലയാളത്തിൽ തയ്യാറാണ്.\n\nതാഴെയുള്ള ലിങ്ക് ടാപ്പ് ചെയ്ത് ആരംഭിക്കുക:\n'+url+'\n\n📝 എല്ലാ ചോദ്യങ്ങൾക്കും ഉത്തരം നൽകി സബ്മിറ്റ് ചെയ്യുക.',
-    kn: 'ನಮಸ್ಕಾರ '+name+'! 👋\n\nನಿಮ್ಮ ಕ್ವಿಜ್ ಕನ್ನಡದಲ್ಲಿ ಸಿದ್ಧವಾಗಿದೆ.\n\nಕೆಳಗಿನ ಲಿಂಕ್ ಅನ್ನು ತಟ್ಟಿ ಪ್ರಾರಂಭಿಸಿ:\n'+url+'\n\n📝 ಎಲ್ಲಾ ಪ್ರಶ್ನೆಗಳಿಗೆ ಉತ್ತರಿಸಿ ಸಲ್ಲಿಸು ಗುಂಡಿಯನ್ನು ಒತ್ತಿ.',
-    hi: 'नमस्ते '+name+'! 👋\n\nआपका क्विज़ हिंदी में तैयार है।\n\nनीचे दिए लिंक को टैप करके शुरू करें:\n'+url+'\n\n📝 सभी प्रश्नों के उत्तर देकर सबमिट बटन दबाएं।'
+function copyLinkUrl(url){
+  navigator.clipboard.writeText(url).then(function(){ toast('Link copied!'); }).catch(function(){ prompt('Copy this link:',url); });
+}
+
+function openWA(phone, name, lang, url){
+  var msg = buildWAMsg(name, lang, url);
+  if(phone && phone.length >= 7){
+    window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg), '_blank');
+  } else {
+    window.open('https://wa.me/?text='+encodeURIComponent(msg), '_blank');
+  }
+}
+
+function buildWAMsg(name, lang, url){
+  var msgs = {
+    en: 'Hello '+name+'! 👋\n\nYour quiz is ready in English.\n\nTap the link to start:\n'+url+'\n\n📝 Answer all questions and tap Submit when done.',
+    ta: 'வணக்கம் '+name+'! 👋\n\nஉங்கள் வினாடி வினா தமிழில் தயாராக உள்ளது.\n\nகீழே உள்ள இணைப்பை தட்டவும்:\n'+url+'\n\n📝 அனைத்து கேள்விகளுக்கும் பதிலளித்து சமர்ப்பி பொத்தானை அழுத்தவும்.',
+    ml: 'ഹലോ '+name+'! 👋\n\nനിങ്ങളുടെ ക്വിസ് മലയാളത്തിൽ തയ്യാറാണ്.\n\nലിങ്ക് ടാപ്പ് ചെയ്യൂ:\n'+url+'\n\n📝 എല്ലാ ചോദ്യങ്ങൾക്കും ഉത്തരം നൽകി സമർപ്പിക്കുക.',
+    kn: 'ಹಲೋ '+name+'! 👋\n\nನಿಮ್ಮ ಕ್ವಿಜ್ ಕನ್ನಡದಲ್ಲಿ ಸಿದ್ಧವಾಗಿದೆ.\n\nಲಿಂಕ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ:\n'+url+'\n\n📝 ಎಲ್ಲಾ ಪ್ರಶ್ನೆಗಳಿಗೆ ಉತ್ತರಿಸಿ ಮತ್ತು ಸಲ್ಲಿಸಿ ಒತ್ತಿರಿ.',
+    hi: 'नमस्ते '+name+'! 👋\n\nआपकी प्रश्नोत्तरी हिंदी में तैयार है.\n\nलिंक पर टैप करें:\n'+url+'\n\n📝 सभी प्रश्नों के उत्तर देकर सबमिट बटन दबाएं।'
   };
   return msgs[lang] || msgs.en;
 }
+
 
 function makeQR(id, url){
   const el=document.getElementById(id); if(!el) return;
@@ -829,34 +863,6 @@ function makeQR(id, url){
 }
 function copyLink(qid){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; navigator.clipboard.writeText(u).then(function(){toast('Link copied!');}).catch(function(){prompt('Copy:',u);}); }
 function testLink(qid){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(u) window.open(u,'_blank'); }
-function sendWA(phone, qid, lang, name){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; const msg=buildWAMessage(name,lang,u); window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank'); }
-function sendWANoPhone(qid, lang, name){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; const msg=buildWAMessage(name,lang,u); window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }
-
-// ══════════════════════
-// STUDENT QUIZ
-// ══════════════════════
-let QD=null, SA={};
-
-async function initStudent(encoded){
-  const d = decQ(encoded);
-  if(!d||!d.qs?.length){
-    document.getElementById('quiz-meta').innerHTML='<span style="color:var(--accent2)">❌ Invalid link. Ask your teacher to resend.</span>';
-    return;
-  }
-  const prev = localStorage.getItem(DONE_PFX+d.qid);
-  if(prev){ try{ showDone(JSON.parse(prev)); return; }catch(e){} }
-  QD = {...d};
-  const l=LANGS[d.lang]||LANGS.en, i=I18[d.lang]||I18.en;
-  document.getElementById('quiz-meta').textContent = l.flag+' Quiz — '+d.name;
-  document.querySelector('.quiz-shell').classList.add(l.cls);
-  document.getElementById('lbl-det').textContent = i.det;
-  document.getElementById('lbl-name').textContent = i.name;
-  document.getElementById('lbl-email').textContent = i.email;
-  document.getElementById('s-name').value = d.name;
-  document.getElementById('sub-lbl').textContent = i.sub;
-  document.getElementById('name-entry').style.display = 'block';
-}
-
 function startQuiz(){
   const name = document.getElementById('s-name').value.trim();
   if(!name){ toast('Please enter your name','#ff6584'); return; }

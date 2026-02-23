@@ -114,6 +114,35 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .empty{text-align:center;padding:32px;color:var(--muted)}
 code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-radius:5px;font-family:monospace;font-size:.85em}
 @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* ── TIMER STYLES ── */
+.timer-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:12px;padding:10px 16px;margin-bottom:14px;
+  position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);
+}
+.timer-display{
+  display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.3rem;
+  font-variant-numeric:tabular-nums;letter-spacing:1px;
+  transition:color .3s;
+}
+.timer-display.ok{color:var(--green)}
+.timer-display.warn{color:var(--yellow)}
+.timer-display.danger{color:var(--accent2);animation:pulse-red 1s ease infinite}
+@keyframes pulse-red{0%,100%{opacity:1}50%{opacity:.5}}
+.timer-ring{width:36px;height:36px;flex-shrink:0}
+.timer-ring circle{fill:none;stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .9s linear, stroke .3s}
+.timer-label{font-size:.72rem;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.timer-expired-overlay{
+  position:fixed;inset:0;z-index:999;
+  background:rgba(6,6,18,.92);backdrop-filter:blur(8px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:28px;
+}
+.timer-expired-overlay h2{font-size:2rem;font-weight:800;color:var(--accent2);margin:12px 0 6px}
+.timer-expired-overlay p{color:var(--muted);margin-bottom:22px}
+
 @media(max-width:560px){
   .t-nav{padding:11px 13px;flex-direction:column;gap:8px}
   .t-body{padding:16px 12px}.stu-row{grid-template-columns:1fr 1fr}
@@ -123,9 +152,7 @@ code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-
 </head>
 <body>
 
-<!-- ══════════════════════════════════
-     TEACHER VIEW
-══════════════════════════════════ -->
+<!-- ══════════════════════════════════ TEACHER VIEW ══════════════════════════════════ -->
 <div class="view" id="teacher-view">
   <div class="admin-gate" id="admin-gate">
     <div style="font-size:2.6rem;margin-bottom:9px">🔐</div>
@@ -152,10 +179,10 @@ code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-
     <div class="t-body">
       <div id="main-setup">
         <div class="stabs">
-          <button class="stab on"  onclick="switchTab('csv')">📁 CSV</button>
-          <button class="stab"     onclick="switchTab('db')">☁ Database</button>
-          <button class="stab"     onclick="switchTab('students')">👥 Students</button>
-          <button class="stab"     onclick="switchTab('links')">🔗 Links</button>
+          <button class="stab on" onclick="switchTab('csv')">📁 CSV</button>
+          <button class="stab"    onclick="switchTab('db')">☁ Database</button>
+          <button class="stab"    onclick="switchTab('students')">👥 Students</button>
+          <button class="stab"    onclick="switchTab('links')">🔗 Links</button>
         </div>
 
         <!-- CSV TAB -->
@@ -207,38 +234,12 @@ code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-
           <div class="card">
             <div class="card-title"><span class="ico">☁</span>Free Database — Firebase Setup</div>
             <p class="muted" style="margin-bottom:16px">This stores student answers in the cloud so you can see them on your laptop even when students submit from their phones. <strong style="color:var(--text)">One-time setup, free forever, no credit card.</strong></p>
-
             <div style="background:rgba(108,99,255,.08);border:1.5px solid var(--accent);border-radius:11px;padding:16px;margin-bottom:16px">
-              <div class="step-box">
-                <div class="step-num">1</div>
-                <div>
-                  <p style="font-weight:700;font-size:.88rem;margin-bottom:3px">Create Firebase project</p>
-                  <p class="muted" style="font-size:.8rem">Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent)">console.firebase.google.com</a> → Add project → Give any name → Continue → Continue → Create project</p>
-                  <button class="btn btn-accent btn-sm mt" onclick="window.open('https://console.firebase.google.com','_blank')">🔗 Open Firebase</button>
-                </div>
-              </div>
-              <div class="step-box">
-                <div class="step-num">2</div>
-                <div>
-                  <p style="font-weight:700;font-size:.88rem;margin-bottom:3px">Enable Realtime Database</p>
-                  <p class="muted" style="font-size:.8rem">In your project → left sidebar → <strong>Build</strong> → <strong>Realtime Database</strong> → Create database → choose any location → <strong>Start in test mode</strong> → Enable</p>
-                </div>
-              </div>
-              <div class="step-box">
-                <div class="step-num">3</div>
-                <div>
-                  <p style="font-weight:700;font-size:.88rem;margin-bottom:3px">Copy your Database URL</p>
-                  <p class="muted" style="font-size:.8rem">After enabling, you'll see a URL like:<br><code>https://your-project-default-rtdb.firebaseio.com</code><br>Copy that entire URL.</p>
-                </div>
-              </div>
-              <div class="step-box" style="margin-bottom:0">
-                <div class="step-num">4</div>
-                <div>
-                  <p style="font-weight:700;font-size:.88rem;margin-bottom:3px">Paste it below and Save</p>
-                </div>
-              </div>
+              <div class="step-box"><div class="step-num">1</div><div><p style="font-weight:700;font-size:.88rem;margin-bottom:3px">Create Firebase project</p><p class="muted" style="font-size:.8rem">Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent)">console.firebase.google.com</a> → Add project → Give any name → Continue → Continue → Create project</p><button class="btn btn-accent btn-sm mt" onclick="window.open('https://console.firebase.google.com','_blank')">🔗 Open Firebase</button></div></div>
+              <div class="step-box"><div class="step-num">2</div><div><p style="font-weight:700;font-size:.88rem;margin-bottom:3px">Enable Realtime Database</p><p class="muted" style="font-size:.8rem">In your project → left sidebar → <strong>Build</strong> → <strong>Realtime Database</strong> → Create database → choose any location → <strong>Start in test mode</strong> → Enable</p></div></div>
+              <div class="step-box"><div class="step-num">3</div><div><p style="font-weight:700;font-size:.88rem;margin-bottom:3px">Copy your Database URL</p><p class="muted" style="font-size:.8rem">After enabling, you'll see a URL like:<br><code>https://your-project-default-rtdb.firebaseio.com</code><br>Copy that entire URL.</p></div></div>
+              <div class="step-box" style="margin-bottom:0"><div class="step-num">4</div><div><p style="font-weight:700;font-size:.88rem;margin-bottom:3px">Paste it below and Save</p></div></div>
             </div>
-
             <label>Firebase Database URL</label>
             <div class="flex" style="align-items:center">
               <input type="text" id="fb-url" placeholder="https://your-project-default-rtdb.firebaseio.com" style="margin:0;flex:1"/>
@@ -252,31 +253,21 @@ code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-
         <div class="spanel" id="tab-students">
           <div class="card">
             <div class="card-title"><span class="ico">👥</span>Students — Name, Phone & Language</div>
-            <p class="muted" style="margin-bottom:14px">Add each student's name, WhatsApp phone number and their language. When you click Generate Links, the quiz link will be <strong style="color:var(--text)">automatically sent to each student on WhatsApp.</strong></p>
-
-            <!-- Import from CSV option -->
+            <p class="muted" style="margin-bottom:14px">Add each student's name, WhatsApp phone number and their language.</p>
             <div style="background:rgba(108,99,255,.07);border:1px solid var(--accent);border-radius:9px;padding:12px 14px;margin-bottom:14px">
               <p style="font-weight:700;font-size:.86rem;margin-bottom:6px">📥 Import Students from CSV</p>
               <p class="muted" style="font-size:.79rem;margin-bottom:8px">CSV format: <code>name, phone, language</code> &nbsp;|&nbsp; language = en / ta / ml / kn / hi</p>
-              <div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px;font-family:monospace;font-size:.75rem;color:var(--muted);margin-bottom:8px">
-                name,phone,language<br>
-                Priya,919876543210,ta<br>
-                Anand,919123456789,ml<br>
-                Ravi,918765432109,kn
-              </div>
+              <div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px;font-family:monospace;font-size:.75rem;color:var(--muted);margin-bottom:8px">name,phone,language<br>Priya,919876543210,ta<br>Anand,919123456789,ml<br>Ravi,918765432109,kn</div>
               <input type="file" id="stu-csv" accept=".csv" onchange="importStudentCSV(this.files[0])" style="display:none">
               <button class="btn btn-ghost btn-sm" onclick="document.getElementById('stu-csv').click()">📂 Import CSV</button>
               <button class="btn btn-ghost btn-sm" onclick="loadSampleStudents()">⚡ Load Sample</button>
             </div>
-
-            <!-- Column headers -->
             <div style="display:grid;grid-template-columns:1fr 140px 140px auto;gap:9px;padding:0 13px;margin-bottom:4px">
               <span style="font-size:.71rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Student Name</span>
               <span style="font-size:.71rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px">WhatsApp Number</span>
               <span style="font-size:.71rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Language</span>
               <span></span>
             </div>
-
             <div id="student-list"></div>
             <button class="btn btn-ghost btn-sm mt" onclick="addRow()">+ Add Student</button>
           </div>
@@ -290,18 +281,9 @@ code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-
               <p style="color:var(--yellow);font-weight:700;font-size:.86rem">⚠️ Must be hosted online — local file:// links don't work on phones</p>
             </div>
             <div class="host-opts">
-              <div class="host-opt" onclick="window.open('https://netlify.com/drop','_blank')">
-                <div style="font-size:1.4rem">🟢</div><div style="font-weight:700;font-size:.87rem;margin:4px 0 2px">Netlify Drop</div>
-                <div class="muted" style="font-size:.73rem">Drag & drop. 30 sec.</div>
-              </div>
-              <div class="host-opt" onclick="window.open('https://tiiny.host','_blank')">
-                <div style="font-size:1.4rem">🔵</div><div style="font-weight:700;font-size:.87rem;margin:4px 0 2px">Tiiny.host</div>
-                <div class="muted" style="font-size:.73rem">Upload HTML, instant.</div>
-              </div>
-              <div class="host-opt" onclick="window.open('https://pages.github.com','_blank')">
-                <div style="font-size:1.4rem">⚫</div><div style="font-weight:700;font-size:.87rem;margin:4px 0 2px">GitHub Pages</div>
-                <div class="muted" style="font-size:.73rem">Free permanent URL.</div>
-              </div>
+              <div class="host-opt" onclick="window.open('https://netlify.com/drop','_blank')"><div style="font-size:1.4rem">🟢</div><div style="font-weight:700;font-size:.87rem;margin:4px 0 2px">Netlify Drop</div><div class="muted" style="font-size:.73rem">Drag & drop. 30 sec.</div></div>
+              <div class="host-opt" onclick="window.open('https://tiiny.host','_blank')"><div style="font-size:1.4rem">🔵</div><div style="font-weight:700;font-size:.87rem;margin:4px 0 2px">Tiiny.host</div><div class="muted" style="font-size:.73rem">Upload HTML, instant.</div></div>
+              <div class="host-opt" onclick="window.open('https://pages.github.com','_blank')"><div style="font-size:1.4rem">⚫</div><div style="font-weight:700;font-size:.87rem;margin:4px 0 2px">GitHub Pages</div><div class="muted" style="font-size:.73rem">Free permanent URL.</div></div>
             </div>
             <label>Paste Your Hosted URL</label>
             <div class="flex" style="align-items:center">
@@ -312,7 +294,11 @@ code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-
           </div>
           <div class="card">
             <div class="card-title"><span class="ico">🔗</span>Generate & Auto-Send Links</div>
-            <p class="muted" style="margin-bottom:12px">Click below — quiz links are generated for each student <strong style="color:var(--text)">and automatically sent to their WhatsApp number.</strong> Each student gets questions in their own language.</p>
+            <p class="muted" style="margin-bottom:6px">Click below — quiz links are generated for each student. <strong style="color:var(--text)">Questions are randomly shuffled for each student</strong> and a <strong style="color:var(--yellow)">5-minute timer</strong> starts when they begin.</p>
+            <!-- ★ NEW: shuffle info badge -->
+            <div style="background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.25);border-radius:8px;padding:9px 13px;margin-bottom:13px;font-size:.81rem">
+              🔀 <strong style="color:var(--yellow)">Random shuffle ON</strong> — each student receives questions in a unique random order &nbsp;·&nbsp; ⏱ <strong style="color:var(--accent2)">5-min timer</strong> — auto-submits on expiry
+            </div>
             <button class="btn btn-accent" onclick="generateLinks()">⚡ Generate & Send on WhatsApp</button>
             <div id="links-out" class="mt"></div>
           </div>
@@ -339,9 +325,7 @@ code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-
   </div>
 </div>
 
-<!-- ══════════════════════════════════
-     STUDENT VIEW
-══════════════════════════════════ -->
+<!-- ══════════════════════════════════ STUDENT VIEW ══════════════════════════════════ -->
 <div class="view" id="student-view">
   <div class="quiz-shell">
     <div class="quiz-topbar">
@@ -351,6 +335,10 @@ code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-
     <div id="name-entry" style="display:none">
       <div class="card">
         <div class="card-title"><span class="ico">👤</span><span id="lbl-det">Enter your details</span></div>
+        <!-- ★ Timer notice shown before quiz starts -->
+        <div style="background:rgba(255,101,132,.08);border:1px solid rgba(255,101,132,.3);border-radius:9px;padding:10px 14px;margin-bottom:14px;font-size:.84rem">
+          ⏱ <strong style="color:var(--accent2)">5-minute timer</strong> starts when you click Start Quiz. Answers are auto-submitted when time runs out.
+        </div>
         <div class="info-grid">
           <div><label id="lbl-name">Your Name</label><input type="text" id="s-name" placeholder="Full name"/></div>
           <div><label id="lbl-email">Email (optional)</label><input type="email" id="s-email" placeholder="your@email.com"/></div>
@@ -359,6 +347,23 @@ code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-
       </div>
     </div>
     <div id="quiz-area" style="display:none">
+      <!-- ★ TIMER BAR -->
+      <div class="timer-bar" id="timer-bar">
+        <div>
+          <div class="timer-label">Time Remaining</div>
+          <div class="timer-display ok" id="timer-display">5:00</div>
+        </div>
+        <svg class="timer-ring" viewBox="0 0 36 36" id="timer-svg">
+          <circle cx="18" cy="18" r="15.9" stroke="rgba(255,255,255,.1)" stroke-width="3" fill="none"/>
+          <circle cx="18" cy="18" r="15.9" id="timer-arc"
+            stroke="#00d4aa"
+            stroke-dasharray="100 100"
+            stroke-dashoffset="0"
+            transform="rotate(-90 18 18)"
+            fill="none"/>
+        </svg>
+      </div>
+
       <div class="pl"><span id="prog-txt">Q 0 of 5</span><span id="prog-pct">0%</span></div>
       <div class="pb"><div class="pf" id="prog-bar" style="width:0%"></div></div>
       <div id="q-container"></div>
@@ -375,12 +380,11 @@ code{background:rgba(108,99,255,.15);color:var(--accent);padding:2px 7px;border-
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════
-// CONFIG
-// ══════════════════════
+// ══════════════════════ CONFIG ══════════════════════
 const ADMIN_PASS = 'teacher123';
 const LS_KEY     = 'qb7';
 const DONE_PFX   = 'qb7done_';
+const QUIZ_DURATION_SEC = 300; // ★ 5 minutes
 
 const LANGS = {
   en:{name:'English',  flag:'🇬🇧',cls:'f-en',chip:'chip-en'},
@@ -406,250 +410,140 @@ const TR = {
 };
 function tr(x,l){return(l!=='en'&&TR[l]&&TR[l][x])||x;}
 
-// ══════════════════════
-// FIREBASE REST API
-// No SDK needed — just plain fetch to the REST endpoint
-// ══════════════════════
-let FB_URL = ''; // e.g. https://project-rtdb.firebaseio.com
-
+// ══════════════════════ FIREBASE ══════════════════════
+let FB_URL = '';
 function fbPath(){ return FB_URL.replace(/\/+$/,'').replace(/\/quizresults\.json$/,'') + '/quizresults.json'; }
-
 async function fbRead(){
-  try{
-    const r = await fetch(fbPath());
-    if(!r.ok) return [];
-    const data = await r.json();
-    if(!data) return [];
-    // Firebase returns object with keys, convert to array
-    return Object.values(data);
-  }catch(e){ console.error('fbRead',e); return []; }
+  try{ const r=await fetch(fbPath()); if(!r.ok) return []; const d=await r.json(); if(!d) return []; return Object.values(d); }catch(e){ return []; }
 }
-
 async function fbPush(sub){
-  // Firebase POST creates a unique key automatically
-  try{
-    const r = await fetch(fbPath(), {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(sub)
-    });
-    return r.ok;
-  }catch(e){ console.error('fbPush',e); return false; }
+  try{ const r=await fetch(fbPath(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(sub)}); return r.ok; }catch(e){ return false; }
 }
-
 async function fbClear(){
-  try{
-    await fetch(fbPath(), {method:'DELETE'});
-    return true;
-  }catch(e){ return false; }
+  try{ await fetch(fbPath(),{method:'DELETE'}); return true; }catch(e){ return false; }
 }
 
-// ══════════════════════
-// LOCAL STATE
-// ══════════════════════
-let ST = {questions:[]};
+// ══════════════════════ LOCAL STATE ══════════════════════
+let ST={questions:[]};
 function loadLS(){
-  try{
-    const d = JSON.parse(localStorage.getItem(LS_KEY)||'{}');
-    if(d.questions) ST.questions = d.questions;
-    FB_URL = (localStorage.getItem('qb7_fburl') || '').replace(/\/+$/,'');
-  }catch(e){}
+  try{ const d=JSON.parse(localStorage.getItem(LS_KEY)||'{}'); if(d.questions) ST.questions=d.questions; FB_URL=(localStorage.getItem('qb7_fburl')||'').replace(/\/+$/,''); }catch(e){}
 }
-function saveLS(){ try{localStorage.setItem(LS_KEY, JSON.stringify(ST));}catch(e){} }
+function saveLS(){ try{localStorage.setItem(LS_KEY,JSON.stringify(ST));}catch(e){} }
 loadLS();
 
-// ══════════════════════
-// ENCODE / DECODE
-// Quiz data + Firebase URL travel inside the link
-// ══════════════════════
-function encQ(name, lang, qid, fbUrl){
-  // Only tiny payload in URL — questions stored in Firebase
-  const p = {n:name, l:lang, id:qid, f:fbUrl};
+// ══════════════════════ ENCODE / DECODE ══════════════════════
+function encQ(name,lang,qs,qid,fbUrl){
+  const p={n:name,l:lang,q:qs,id:qid,f:fbUrl};
   return btoa(unescape(encodeURIComponent(JSON.stringify(p))));
 }
 function decQ(s){
-  try{
-    const d = JSON.parse(decodeURIComponent(escape(atob(s))));
-    return {name:d.n, lang:d.l, qid:d.id, fbUrl:d.f||''};
-  }catch(e){ return null; }
+  try{ const d=JSON.parse(decodeURIComponent(escape(atob(s)))); return {name:d.n,lang:d.l,qs:d.q,qid:d.id,fbUrl:d.f||''}; }catch(e){ return null; }
 }
 
-// Upload quiz questions to Firebase under /quizzes/{qid}
-async function fbSaveQuiz(fbUrl, qid, name, lang, questions){
-  try{
-    const endpoint = fbUrl.replace(/\/+$/,'')+'/quizzes/'+qid+'.json';
-    const r = await fetch(endpoint, {
-      method: 'PUT',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({name, lang, questions, createdAt: new Date().toLocaleString()})
-    });
-    return r.ok;
-  }catch(e){ console.error('fbSaveQuiz',e); return false; }
+// ★ SHUFFLE helper (Fisher-Yates)
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
 }
 
-// Student fetches quiz questions from Firebase
-async function fbLoadQuiz(fbUrl, qid){
-  try{
-    const endpoint = fbUrl.replace(/\/+$/,'')+'/quizzes/'+qid+'.json';
-    const r = await fetch(endpoint);
-    if(!r.ok) return null;
-    const d = await r.json();
-    return d;
-  }catch(e){ console.error('fbLoadQuiz',e); return null; }
-}
-
-// ══════════════════════
-// ROUTING
-// ══════════════════════
+// ══════════════════════ ROUTING ══════════════════════
 function route(){
-  const code = new URLSearchParams(location.search).get('quiz');
+  const code=new URLSearchParams(location.search).get('quiz');
   if(code){
-    document.getElementById('teacher-view').style.display = 'none';
-    const sv = document.getElementById('student-view');
-    sv.style.display = 'flex'; sv.classList.add('on');
+    document.getElementById('teacher-view').style.display='none';
+    const sv=document.getElementById('student-view');
+    sv.style.display='flex'; sv.classList.add('on');
     initStudent(code);
   } else {
     document.getElementById('teacher-view').classList.add('on');
   }
 }
 
-// ══════════════════════
-// ADMIN
-// ══════════════════════
+// ══════════════════════ ADMIN ══════════════════════
 function adminLogin(){
-  const pw = document.getElementById('admin-pw').value;
-  if(pw === ADMIN_PASS){
-    document.getElementById('admin-gate').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'flex';
+  const pw=document.getElementById('admin-pw').value;
+  if(pw===ADMIN_PASS){
+    document.getElementById('admin-gate').style.display='none';
+    document.getElementById('dashboard').style.display='flex';
     buildStudents();
     if(ST.questions.length){ showPreview(); updateZone(ST.questions.length); }
-    const u = localStorage.getItem('qb_url')||'';
+    const u=localStorage.getItem('qb_url')||'';
     if(u){ const i=document.getElementById('hosted-url'); if(i) i.value=u; }
-    const f = localStorage.getItem('qb7_fburl')||'';
+    const f=localStorage.getItem('qb7_fburl')||'';
     if(f){ const i=document.getElementById('fb-url'); if(i) i.value=f; document.getElementById('db-status').innerHTML='<span style="color:var(--green);font-weight:700">✅ Database connected</span>'; }
   } else {
-    const el = document.getElementById('admin-pw');
-    el.style.animation = 'shake .4s ease';
-    el.addEventListener('animationend', ()=>el.style.animation='', {once:true});
+    const el=document.getElementById('admin-pw');
+    el.style.animation='shake .4s ease';
+    el.addEventListener('animationend',()=>el.style.animation='',{once:true});
     toast('Wrong password!','#ff6584');
   }
 }
 function adminLogout(){
-  document.getElementById('admin-gate').style.display = 'flex';
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('admin-pw').value = '';
+  document.getElementById('admin-gate').style.display='flex';
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('admin-pw').value='';
 }
 
-// ══════════════════════
-// TABS
-// ══════════════════════
-const TABS = ['csv','db','students','links'];
+// ══════════════════════ TABS ══════════════════════
+const TABS=['csv','db','students','links'];
 function switchTab(id){
   TABS.forEach((t,i)=>{
-    document.querySelectorAll('.stab')[i]?.classList.toggle('on', t===id);
-    document.getElementById('tab-'+t)?.classList.toggle('on', t===id);
+    document.querySelectorAll('.stab')[i]?.classList.toggle('on',t===id);
+    document.getElementById('tab-'+t)?.classList.toggle('on',t===id);
   });
 }
 function switchMain(id){
   document.querySelectorAll('.npbtn').forEach((b,i)=>b.classList.toggle('on',['setup','results'][i]===id));
-  document.getElementById('main-setup').style.display = id==='setup'?'block':'none';
-  document.getElementById('main-results').style.display = id==='results'?'block':'none';
+  document.getElementById('main-setup').style.display=id==='setup'?'block':'none';
+  document.getElementById('main-results').style.display=id==='results'?'block':'none';
   if(id==='results') loadResults();
 }
 
-// ══════════════════════
-// DB SAVE & TEST
-// ══════════════════════
+// ══════════════════════ DB ══════════════════════
 async function saveDB(){
-  const raw = document.getElementById('fb-url').value.trim();
-  const val = raw.replace(/\/+$/,''); // remove trailing slashes
-  if(!val){
-    toast('Please paste your Firebase URL first','#ff6584'); return;
-  }
-  if(!val.startsWith('https://')){
-    toast('URL must start with https://','#ff6584'); return;
-  }
-  const st = document.getElementById('db-status');
-  st.innerHTML = '<span class="spin"></span> Testing connection...';
-  FB_URL = val;
-
+  const raw=document.getElementById('fb-url').value.trim();
+  const val=raw.replace(/\/+$/,'');
+  if(!val){ toast('Please paste your Firebase URL first','#ff6584'); return; }
+  if(!val.startsWith('https://')){ toast('URL must start with https://','#ff6584'); return; }
+  const st=document.getElementById('db-status');
+  st.innerHTML='<span class="spin"></span> Testing connection...';
+  FB_URL=val;
   try{
-    // Step 1: simple GET test (read null is fine)
-    const readRes = await fetch(val + '/qbtest.json');
-    if(!readRes.ok){
-      const txt = await readRes.text();
-      FB_URL = '';
-      st.innerHTML = '<span style="color:var(--accent2);font-weight:700">❌ Read failed ('+readRes.status+'): '+txt+'</span>';
-      return;
-    }
-
-    // Step 2: write test
-    const writeRes = await fetch(val + '/qbtest.json', {
-      method: 'PUT',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ok:true, t: Date.now()})
-    });
-    if(!writeRes.ok){
-      const txt = await writeRes.text();
-      FB_URL = '';
-      st.innerHTML = '<span style="color:var(--accent2);font-weight:700">❌ Write failed ('+writeRes.status+'): '+txt+'</span>';
-      return;
-    }
-
-    // All good!
-    localStorage.setItem('qb7_fburl', val);
-    st.innerHTML = '<span style="color:var(--green);font-weight:700">✅ Connected! Firebase is working. Go to 👥 Students tab next.</span>';
+    const readRes=await fetch(val+'/qbtest.json');
+    if(!readRes.ok){ const txt=await readRes.text(); FB_URL=''; st.innerHTML='<span style="color:var(--accent2);font-weight:700">❌ Read failed ('+readRes.status+'): '+txt+'</span>'; return; }
+    const writeRes=await fetch(val+'/qbtest.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({ok:true,t:Date.now()})});
+    if(!writeRes.ok){ const txt=await writeRes.text(); FB_URL=''; st.innerHTML='<span style="color:var(--accent2);font-weight:700">❌ Write failed ('+writeRes.status+'): '+txt+'</span>'; return; }
+    localStorage.setItem('qb7_fburl',val);
+    st.innerHTML='<span style="color:var(--green);font-weight:700">✅ Connected! Firebase is working. Go to 👥 Students tab next.</span>';
     toast('✅ Firebase connected!');
-
   }catch(e){
-    // Show the REAL error message
-    FB_URL = '';
-    st.innerHTML = '<span style="color:var(--accent2);font-weight:700">❌ Error: '+e.message+'<br><span style="font-weight:400;font-size:.8rem">URL used: '+val+'</span></span>';
+    FB_URL='';
+    st.innerHTML='<span style="color:var(--accent2);font-weight:700">❌ Error: '+e.message+'</span>';
   }
 }
 
-// ══════════════════════
-// CSV
-// ══════════════════════
-document.addEventListener('DOMContentLoaded', ()=>{
-  const dz = document.getElementById('drop-zone');
-  if(dz) dz.addEventListener('click', e=>{
-    if(e.target.tagName==='BUTTON'||e.target.closest('button')) return;
-    document.getElementById('csv-file').click();
-  });
+// ══════════════════════ CSV ══════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  const dz=document.getElementById('drop-zone');
+  if(dz) dz.addEventListener('click',e=>{ if(e.target.tagName==='BUTTON'||e.target.closest('button')) return; document.getElementById('csv-file').click(); });
 });
 function handleDrop(e){ e.preventDefault(); document.getElementById('drop-zone').classList.remove('drag'); const f=e.dataTransfer.files[0]; if(f) handleCSV(f); }
-function handleCSV(file){
-  if(!file) return;
-  const r = new FileReader();
-  r.onload = e => {
-    let text = e.target.result;
-    if(text.charCodeAt(0) > 127){
-      const r2 = new FileReader();
-      r2.onload = e2 => {
-        try{ text = new TextDecoder('utf-8').decode(e2.target.result); }
-        catch(err){ try{ text = new TextDecoder('windows-1252').decode(e2.target.result); }catch(e3){} }
-        parseCSV(text);
-      };
-      r2.readAsArrayBuffer(file);
-    } else { parseCSV(text); }
-  };
-  r.readAsText(file, 'utf-8');
-}
+function handleCSV(file){ if(!file) return; const r=new FileReader(); r.onload=e=>parseCSV(e.target.result); r.readAsText(file); }
 function parseCSV(txt){
-  txt = txt.replace(/^\uFEFF/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-  const lines = txt.trim().split('\n').filter(l=>l.trim());
-  const qs = [];
-  const start = lines[0].toLowerCase().includes('question') ? 1 : 0;
-  for(let i=start; i<lines.length; i++){
-    const cols = csvSplit(lines[i]);
-    if(cols.length < 6) continue;
-    const [q,a,b,c,d,ans] = cols.map(s=>s.trim().replace(/^"|"$/g,''));
+  const lines=txt.trim().split('\n').filter(l=>l.trim());
+  const qs=[]; const start=lines[0].toLowerCase().includes('question')?1:0;
+  for(let i=start;i<lines.length;i++){
+    const cols=csvSplit(lines[i]); if(cols.length<6) continue;
+    const [q,a,b,c,d,ans]=cols.map(s=>s.trim().replace(/^"|"$/g,''));
     if(!q) continue;
-    qs.push({q,a,b,c,d, correct: ans.toUpperCase().charAt(0)});
+    qs.push({q,a,b,c,d,correct:ans.toUpperCase().charAt(0)});
   }
   if(!qs.length){ toast('No valid questions found!','#ff6584'); return; }
-  ST.questions = qs; saveLS();
+  ST.questions=qs; saveLS();
   toast(`✅ ${qs.length} questions loaded!`);
   showPreview(); updateZone(qs.length);
 }
@@ -659,9 +553,9 @@ function csvSplit(line){
   res.push(cur); return res;
 }
 function showPreview(){
-  document.getElementById('csv-preview').style.display = 'block';
-  document.getElementById('q-count-lbl').textContent = ST.questions.length + ' Questions Loaded';
-  document.getElementById('q-tbody').innerHTML = ST.questions.map((q,i)=>
+  document.getElementById('csv-preview').style.display='block';
+  document.getElementById('q-count-lbl').textContent=ST.questions.length+' Questions Loaded';
+  document.getElementById('q-tbody').innerHTML=ST.questions.map((q,i)=>
     `<tr><td>${i+1}</td><td>${q.q}</td><td>${q.a}</td><td>${q.b}</td><td>${q.c}</td><td>${q.d}</td><td><span class="cbadge">${q.correct}</span></td></tr>`
   ).join('');
 }
@@ -687,365 +581,246 @@ What is 12x12?,124,144,134,154,B
 Who wrote Romeo and Juliet?,Dickens,Twain,Shakespeare,Austen,C`);
 }
 
-// ══════════════════════
-// STUDENTS
-// ══════════════════════
+// ══════════════════════ STUDENTS ══════════════════════
 let si=0;
-function buildStudents(){
-  if(!document.getElementById('student-list').children.length)
-    loadSampleStudents();
-}
-
-function downloadSampleStudentCSV(){
-  const content = 'name,phone,language\nPriya,919876543210,ta\nAnand,919123456789,ml\nRavi,918765432109,kn\nMeena,917654321098,hi\nJohn,919011223344,en';
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([content], {type:'text/csv'}));
-  a.download = 'students_sample.csv';
-  a.click();
-  toast('Sample CSV downloaded!');
-}
+function buildStudents(){ if(!document.getElementById('student-list').children.length) loadSampleStudents(); }
 function loadSampleStudents(){
-  document.getElementById('student-list').innerHTML='';
-  si=0;
-  [
-    ['Priya',   '919876543210','ta'],
-    ['Anand',   '919123456789','ml'],
-    ['Ravi',    '918765432109','kn'],
-    ['Meena',   '917654321098','hi'],
-    ['John',    '916543210987','en']
-  ].forEach(([n,p,l])=>addRow(n,p,l));
+  document.getElementById('student-list').innerHTML=''; si=0;
+  [['Priya','919876543210','ta'],['Anand','919123456789','ml'],['Ravi','918765432109','kn'],['Meena','917654321098','hi'],['John','916543210987','en']].forEach(([n,p,l])=>addRow(n,p,l));
 }
-function addRow(name='', phone='', lang='en'){
+function addRow(name='',phone='',lang='en'){
   const el=document.getElementById('student-list');
   const id=++si; const div=document.createElement('div');
   div.className='stu-row'; div.id='sr_'+id;
-  div.innerHTML=`
-    <div><input type="text" id="sn_${id}" value="${name}" placeholder="Student name" style="margin:0"/></div>
-    <div><input type="tel"  id="sp_${id}" value="${phone}" placeholder="91XXXXXXXXXX" style="margin:0"/></div>
-    <div><select id="sl_${id}" style="margin:0">${LOPT}</select></div>
-    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('sr_${id}').remove()">✕</button>`;
+  div.innerHTML=`<div><input type="text" id="sn_${id}" value="${name}" placeholder="Student name" style="margin:0"/></div><div><input type="tel" id="sp_${id}" value="${phone}" placeholder="91XXXXXXXXXX" style="margin:0"/></div><div><select id="sl_${id}" style="margin:0">${LOPT}</select></div><button class="btn btn-ghost btn-sm" onclick="document.getElementById('sr_${id}').remove()">✕</button>`;
   el.appendChild(div);
-  if(lang) setTimeout(()=>{ const s=document.getElementById('sl_'+id); if(s) s.value=lang; }, 0);
+  if(lang) setTimeout(()=>{ const s=document.getElementById('sl_'+id); if(s) s.value=lang; },0);
 }
 function getStudents(){
   return [...document.querySelectorAll('[id^="sr_"]')].map(r=>{
     const id=r.id.replace('sr_','');
-    const name  = document.getElementById('sn_'+id)?.value.trim();
-    const phone = document.getElementById('sp_'+id)?.value.trim().replace(/\D/g,''); // digits only
-    const lang  = document.getElementById('sl_'+id)?.value;
-    return {name, phone, lang};
+    return {name:document.getElementById('sn_'+id)?.value.trim(), phone:document.getElementById('sp_'+id)?.value.trim().replace(/\D/g,''), lang:document.getElementById('sl_'+id)?.value};
   }).filter(s=>s.name);
 }
-
-// Import students from CSV (name, phone, language)
 function importStudentCSV(file){
   if(!file) return;
-
-  function parseAndLoad(text){
-    // Strip BOM (ï»¿ or \uFEFF) and any junk at start
-    text = text.replace(/^\uFEFF/,'')          // UTF-8 BOM
-               .replace(/^[\u00EF\u00BB\u00BF]+/,'') // latin1-read BOM bytes
-               .replace(/\r\n/g,'\n')
-               .replace(/\r/g,'\n');
-
-    const lines = text.trim().split('\n').filter(l=>l.trim());
-    if(!lines.length){ toast('CSV appears empty','#ff6584'); return; }
-
-    // Skip header row if present
-    const first = lines[0].toLowerCase();
-    const start = (first.includes('name') || first.includes('phone') || first.includes('lang')) ? 1 : 0;
-
-    document.getElementById('student-list').innerHTML=''; si=0;
-    let count=0;
-
-    for(let i=start; i<lines.length; i++){
-      const raw = lines[i].trim();
-      if(!raw) continue;
-
-      // Split by comma, handle quoted fields
-      const cols = raw.split(',').map(s=>
-        s.trim()
-         .replace(/^["'\u201C\u201D]+/,'')   // remove opening quotes (including curly)
-         .replace(/["'\u201C\u201D]+$/,'')   // remove closing quotes
-         .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g,'') // strip control chars
-         .trim()
-      );
-
-      if(cols.length < 1) continue;
-
-      let name  = cols[0] || '';
-      let phone = (cols[1] || '').replace(/\D/g,'');  // digits only
-      let lang  = (cols[2] || 'en').toLowerCase().trim();
-
-      // Validate lang code
-      if(!['en','ta','ml','kn','hi'].includes(lang)) lang = 'en';
-
-      if(name){ addRow(name, phone, lang); count++; }
+  const r=new FileReader();
+  r.onload=e=>{
+    const lines=e.target.result.trim().split('\n').filter(l=>l.trim());
+    const start=lines[0].toLowerCase().includes('name')?1:0;
+    document.getElementById('student-list').innerHTML=''; si=0; let count=0;
+    for(let i=start;i<lines.length;i++){
+      const cols=lines[i].split(',').map(s=>s.trim().replace(/^"|"$/g,''));
+      if(cols.length<2) continue;
+      const [name,phone,lang='en']=cols;
+      if(name){ addRow(name,phone||'',lang.toLowerCase()); count++; }
     }
-
-    if(count === 0){
-      toast('No valid students found. Check CSV format.','#ff6584');
-    } else {
-      toast('✅ '+count+' students imported!');
-    }
-  }
-
-  // Try UTF-8 first
-  const r = new FileReader();
-  r.onload = e => {
-    let text = e.target.result;
-    // Check if result has junk (BOM read as latin1 looks like Ã¯Â»Â¿)
-    if(text.charCodeAt(0) > 127 && text.charCodeAt(0) < 256){
-      // Likely wrong encoding — retry as UTF-8 via ArrayBuffer
-      const r2 = new FileReader();
-      r2.onload = e2 => {
-        try{
-          text = new TextDecoder('utf-8').decode(e2.target.result);
-        }catch(err){
-          try{ text = new TextDecoder('windows-1252').decode(e2.target.result); }catch(err2){}
-        }
-        parseAndLoad(text);
-      };
-      r2.readAsArrayBuffer(file);
-    } else {
-      parseAndLoad(text);
-    }
+    toast(`✅ ${count} students imported!`);
   };
-  r.readAsText(file, 'utf-8');
+  r.readAsText(file);
 }
 
-// ══════════════════════
-// URL SAVE
-// ══════════════════════
+// ══════════════════════ URL ══════════════════════
 function checkUrl(){ const v=document.getElementById('hosted-url').value.trim(); document.getElementById('url-warn').style.display=(v&&!v.startsWith('http'))?'block':'none'; }
 function saveUrl(){
-  const v = document.getElementById('hosted-url').value.trim();
+  const v=document.getElementById('hosted-url').value.trim();
   if(!v){toast('Enter a URL','#ff6584');return;}
   if(!v.startsWith('http')){toast('Must start with https://','#ff6584');return;}
-  localStorage.setItem('qb_url', v.replace(/\/$/,''));
+  localStorage.setItem('qb_url',v.replace(/\/$/,''));
   toast('✅ URL saved!');
 }
 
-// ══════════════════════
-// GENERATE LINKS + AUTO SEND WHATSAPP
-// ══════════════════════
-async function generateLinks(){
-  if(!ST.questions.length){ toast('Upload questions CSV first!','#ff6584'); switchTab('csv'); return; }
+// ══════════════════════ GENERATE LINKS ══════════════════════
+// ★ Questions are NOW randomly shuffled per student
+function generateLinks(){
+  if(!ST.questions.length){ toast('Upload CSV first!','#ff6584'); switchTab('csv'); return; }
   if(!FB_URL){ toast('Set up Firebase Database first!','#ff6584'); switchTab('db'); return; }
-  const students = getStudents();
+  const students=getStudents();
   if(!students.length){ toast('Add students first','#ff6584'); return; }
-  const savedUrl = localStorage.getItem('qb_url')||'';
-  const cur = location.href.split('?')[0];
-  const base = savedUrl || cur;
+  const savedUrl=localStorage.getItem('qb_url')||'';
+  const cur=location.href.split('?')[0];
+  const base=savedUrl||cur;
   if(cur.startsWith('file://')&&!savedUrl){
-    document.getElementById('links-out').innerHTML =
-      '<div style="background:rgba(255,101,132,.1);border:2px solid var(--accent2);border-radius:11px;padding:20px;text-align:center">'
-      +'<div style="font-size:1.8rem;margin-bottom:7px">📵</div>'
-      +'<h3 style="color:var(--accent2);margin-bottom:5px">Local file — cannot open on phones</h3>'
-      +'<p class="muted">Host on GitHub Pages first, paste the URL in 🔗 Links tab, then generate.</p>'
-      +'</div>';
+    document.getElementById('links-out').innerHTML='<div style="background:rgba(255,101,132,.1);border:2px solid var(--accent2);border-radius:11px;padding:20px;text-align:center"><div style="font-size:1.8rem;margin-bottom:7px">📵</div><h3 style="color:var(--accent2);margin-bottom:5px">Local file — cannot open on phones</h3><p class="muted">Host online first, paste URL above.</p></div>';
     return;
   }
 
-  const el = document.getElementById('links-out');
-  el.innerHTML = '<div style="padding:20px;text-align:center"><span class="spin" style="border-color:rgba(108,99,255,.3);border-top-color:var(--accent)"></span><p style="margin-top:9px;color:var(--muted)">Saving quizzes to database...</p></div>';
-
-  // Build quiz data for each student
-  const sessionId = 'q'+Date.now();
-  const quizList  = [];
-
-  for(let idx=0; idx<students.length; idx++){
-    const {name, phone, lang} = students[idx];
-    // Clean qid — only alphanumeric + underscore (Firebase key rule)
-    const qid = sessionId+'_'+name.replace(/[^a-zA-Z0-9]/g,'')+'_'+lang+'_'+idx;
-    const url  = base+'?quiz='+encQ(name, lang, qid, FB_URL);
-
-    // Save questions to Firebase for this student
-    const ok = await fbSaveQuiz(FB_URL, qid, name, lang, ST.questions);
-    if(!ok){
-      el.innerHTML = '<div style="background:rgba(255,101,132,.1);border:2px solid var(--accent2);border-radius:11px;padding:20px;text-align:center">'
-        +'<div style="font-size:1.8rem;margin-bottom:7px">❌</div>'
-        +'<h3 style="color:var(--accent2);margin-bottom:5px">Failed to save quiz to database</h3>'
-        +'<p class="muted">Check your Firebase connection in ☁ Database tab and try again.</p>'
-        +'</div>';
-      return;
-    }
-    quizList.push({name, phone, lang, qid, url});
-  }
-
-  // All saved — now render links
-  const withPhone = quizList.filter(function(s){ return s.phone && s.phone.length >= 7; }).length;
-  el.innerHTML =
-    '<div style="background:rgba(0,212,170,.07);border:1px solid var(--green);border-radius:9px;padding:11px 14px;margin-bottom:14px">'
-    +'<p style="color:var(--green);font-weight:700;font-size:.88rem">✅ '+quizList.length+' links ready — quiz saved to database</p>'
-    +'<p class="muted" style="font-size:.79rem;margin-top:3px">'+withPhone+' WhatsApp messages will open automatically. Allow popups if asked.</p>'
+  const el=document.getElementById('links-out');
+  el.innerHTML='';
+  const withPhone=students.filter(s=>s.phone&&s.phone.length>=7).length;
+  el.innerHTML='<div style="background:rgba(0,212,170,.07);border:1px solid var(--green);border-radius:9px;padding:11px 14px;margin-bottom:14px">'
+    +'<p style="color:var(--green);font-weight:700;font-size:.88rem">✅ '+students.length+' links generated — '+withPhone+' WhatsApp messages sending automatically</p>'
+    +'<p class="muted" style="font-size:.79rem;margin-top:3px">🔀 Questions randomly shuffled per student &nbsp;·&nbsp; ⏱ 5-minute timer active. Allow popups if browser asks.</p>'
     +'</div>';
 
-  quizList.forEach(function(student, idx){
-    var name  = student.name;
-    var phone = student.phone;
-    var lang  = student.lang;
-    var url   = student.url;
-    var qid   = student.qid;
-    var l     = LANGS[lang]||LANGS.en;
-    var qrId  = 'qr_'+idx;
-    var hasPhone = phone && phone.length >= 7;
+  students.forEach(function(student,idx){
+    const {name,phone,lang}=student;
+    const qid=name.replace(/\W/g,'')+'_'+lang+'_'+Date.now()+'_'+idx;
 
-    var card = document.createElement('div');
-    card.className = 'link-card';
-    card.innerHTML =
-      '<div class="lc-top">'
-        +'<div>'
-          +'<span class="lc-name">'+l.flag+' '+name+'</span>'
-          +(hasPhone
-            ? '<span class="muted" style="font-size:.78rem;margin-left:8px">📱 +'+phone+'</span>'
-            : '<span style="font-size:.75rem;color:var(--accent2);margin-left:8px">⚠️ No phone</span>')
-        +'</div>'
-        +'<div class="flex">'
-          +'<span class="lang-chip '+l.chip+'">'+l.name+'</span>'
-          +'<span class="s-pend">⏳ Pending</span>'
-        +'</div>'
+    // ★ SHUFFLE questions uniquely for each student
+    const shuffledQs=shuffle(ST.questions);
+
+    const encoded=encQ(name,lang,shuffledQs,qid,FB_URL);
+    const url=base+'?quiz='+encoded;
+    const l=LANGS[lang]||LANGS.en;
+    const qrId='qr_'+qid;
+    const hasPhone=phone&&phone.length>=7;
+    const q1preview=tr(shuffledQs[0].q,lang);
+    const preview=q1preview.length>45?q1preview.substring(0,45)+'...':q1preview;
+    const phoneDisplay=hasPhone
+      ?'<span class="muted" style="font-size:.78rem;margin-left:8px">📱 +'+phone+'</span>'
+      :'<span style="font-size:.75rem;color:var(--accent2);margin-left:8px">⚠️ No phone</span>';
+    const waBtnHtml=hasPhone
+      ?'<button class="btn btn-green btn-sm" onclick="sendWA(\''+phone+'\',\''+qid+'\',\''+lang+'\',\''+name+'\')">💬 Resend WA</button>'
+      :'<button class="btn btn-ghost btn-sm" onclick="sendWANoPhone(\''+qid+'\',\''+lang+'\',\''+name+'\')">💬 WhatsApp</button>';
+
+    el.innerHTML+='<div class="link-card">'
+      +'<div class="lc-top">'
+      +'<div><span class="lc-name">'+l.flag+' '+name+'</span>'+phoneDisplay+'</div>'
+      +'<div class="flex"><span class="lang-chip '+l.chip+'">'+l.name+'</span>'
+      +'<span style="font-size:.71rem;background:rgba(255,209,102,.12);color:var(--yellow);padding:2px 8px;border-radius:20px;font-weight:700">🔀 Shuffled</span>'
+      +'<span style="font-size:.71rem;background:rgba(255,101,132,.12);color:var(--accent2);padding:2px 8px;border-radius:20px;font-weight:700">⏱ 5 min</span>'
+      +'<span class="s-pend" id="st_'+qid+'">⏳ Pending</span></div>'
       +'</div>'
       +'<div style="background:rgba(108,99,255,.06);border:1px solid var(--border);border-radius:7px;padding:7px 11px;margin-bottom:9px;font-size:.78rem;color:var(--muted)">'
-        +'📝 <strong style="color:var(--text)">'+ST.questions.length+' questions</strong> in <strong style="color:var(--yellow)">'+l.name+'</strong>'
+      +'📝 <strong style="color:var(--text)">'+shuffledQs.length+' questions</strong> in <strong style="color:var(--yellow)">'+l.name+'</strong> &nbsp;·&nbsp; Q1: "'+preview+'"'
       +'</div>'
       +'<div class="lc-grid">'
-        +'<div>'
-          +'<label style="margin-bottom:4px">Quiz Link</label>'
-          +'<div class="lc-url" id="u_'+idx+'">'+url+'</div>'
-          +'<div class="flex" style="margin-top:7px">'
-            +'<button class="btn btn-accent btn-sm" id="copy_'+idx+'">📋 Copy</button>'
-            +(hasPhone
-              ? '<button class="btn btn-green btn-sm" id="wa_'+idx+'">💬 Resend WhatsApp</button>'
-              : '<button class="btn btn-ghost btn-sm" id="wa_'+idx+'">💬 WhatsApp</button>')
-            +'<button class="btn btn-ghost btn-sm" id="test_'+idx+'">🔗 Test</button>'
-          +'</div>'
-        +'</div>'
-        +'<div>'
-          +'<label style="margin-bottom:4px">QR Code</label>'
-          +'<div class="qr-box" id="'+qrId+'"><span class="muted" style="font-size:.7rem;padding:5px">Loading...</span></div>'
-          +'<p class="muted" style="font-size:.69rem;margin-top:3px;text-align:center">Scan on phone</p>'
-        +'</div>'
-      +'</div>';
+      +'<div><label style="margin-bottom:4px">Quiz Link</label>'
+      +'<div class="lc-url" id="u_'+qid+'">'+url+'</div>'
+      +'<div class="flex" style="margin-top:7px">'
+      +'<button class="btn btn-accent btn-sm" onclick="copyLink(\''+qid+'\')">📋 Copy</button>'
+      +'<button class="btn btn-ghost btn-sm" onclick="testLink(\''+qid+'\')">🔗 Test</button>'
+      +waBtnHtml
+      +'</div></div>'
+      +'<div><label style="margin-bottom:4px">QR Code</label>'
+      +'<div class="qr-box" id="'+qrId+'"><span class="muted" style="font-size:.7rem;padding:5px">Loading...</span></div>'
+      +'<p class="muted" style="font-size:.69rem;margin-top:3px;text-align:center">Scan on phone</p>'
+      +'</div></div></div>';
 
-    el.appendChild(card);
-
-    // Safe event binding
-    (function(i, p, n, lg, u){
-      document.getElementById('copy_'+i).onclick = function(){ copyLinkUrl(u); };
-      document.getElementById('test_'+i).onclick = function(){ window.open(u,'_blank'); };
-      document.getElementById('wa_'+i).onclick   = function(){ openWA(p||'', n, lg, u); };
-    })(idx, phone, name, lang, url);
-
-    setTimeout(function(){ makeQR(qrId, url); }, 80);
-
-    // Auto-open WhatsApp
     if(hasPhone){
-      (function(p, n, lg, u, delay){
+      (function(p,n,l2,u2,delay){
         setTimeout(function(){
-          window.open('https://wa.me/'+p+'?text='+encodeURIComponent(buildWAMsg(n,lg,u)), '_blank');
-        }, delay);
-      })(phone, name, lang, url, 800*(idx+1));
+          const msg=buildWAMessage(n,l2,u2);
+          window.open('https://wa.me/'+p+'?text='+encodeURIComponent(msg),'_blank');
+        },delay);
+      })(phone,name,lang,url,600*(idx+1));
     }
+    setTimeout(function(){ makeQR(qrId,url); },80);
   });
-
-  toast('✅ Links ready!');
+  toast('⚡ Links ready! Questions shuffled per student. WhatsApp sending...');
 }
 
-
-function copyLinkUrl(url){
-  navigator.clipboard.writeText(url).then(function(){ toast('Link copied!'); }).catch(function(){ prompt('Copy this link:',url); });
-}
-
-function openWA(phone, name, lang, url){
-  var msg = buildWAMsg(name, lang, url);
-  if(phone && phone.length >= 7){
-    window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg), '_blank');
-  } else {
-    window.open('https://wa.me/?text='+encodeURIComponent(msg), '_blank');
-  }
-}
-
-function buildWAMsg(name, lang, url){
-  var msgs = {
-    en: 'Hello '+name+'! 👋\n\nYour quiz is ready in English.\n\nTap the link to start:\n'+url+'\n\n📝 Answer all questions and tap Submit when done.',
-    ta: 'வணக்கம் '+name+'! 👋\n\nஉங்கள் வினாடி வினா தமிழில் தயாராக உள்ளது.\n\nகீழே உள்ள இணைப்பை தட்டவும்:\n'+url+'\n\n📝 அனைத்து கேள்விகளுக்கும் பதிலளித்து சமர்ப்பி பொத்தானை அழுத்தவும்.',
-    ml: 'ഹലോ '+name+'! 👋\n\nനിങ്ങളുടെ ക്വിസ് മലയാളത്തിൽ തയ്യാറാണ്.\n\nലിങ്ക് ടാപ്പ് ചെയ്യൂ:\n'+url+'\n\n📝 എല്ലാ ചോദ്യങ്ങൾക്കും ഉത്തരം നൽകി സമർപ്പിക്കുക.',
-    kn: 'ಹಲೋ '+name+'! 👋\n\nನಿಮ್ಮ ಕ್ವಿಜ್ ಕನ್ನಡದಲ್ಲಿ ಸಿದ್ಧವಾಗಿದೆ.\n\nಲಿಂಕ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ:\n'+url+'\n\n📝 ಎಲ್ಲಾ ಪ್ರಶ್ನೆಗಳಿಗೆ ಉತ್ತರಿಸಿ ಮತ್ತು ಸಲ್ಲಿಸಿ ಒತ್ತಿರಿ.',
-    hi: 'नमस्ते '+name+'! 👋\n\nआपकी प्रश्नोत्तरी हिंदी में तैयार है.\n\nलिंक पर टैप करें:\n'+url+'\n\n📝 सभी प्रश्नों के उत्तर देकर सबमिट बटन दबाएं।'
+function buildWAMessage(name,lang,url){
+  const msgs={
+    en:'Hello '+name+'! 👋\n\nYour quiz is ready in English.\n\n⏱ You have 5 minutes to complete it.\n\nTap the link below to start:\n'+url+'\n\n📝 Answer all questions and tap Submit when done.',
+    ta:'வணக்கம் '+name+'! 👋\n\nவினாடி வினா தமிழில் தயார்.\n\n⏱ 5 நிமிடம் மட்டுமே!\n\n'+url+'\n\n📝 சமர்ப்பி அழுத்தவும்.',
+    ml:'ഹലോ '+name+'! 👋\n\nക്വിസ് മലയാളത്തിൽ തയ്യാർ.\n\n⏱ 5 മിനിറ്റ് മാത്രം!\n\n'+url+'\n\n📝 സബ്മിറ്റ് ചെയ്യുക.',
+    kn:'ನಮಸ್ಕಾರ '+name+'! 👋\n\nಕ್ವಿಜ್ ಕನ್ನಡದಲ್ಲಿ ಸಿದ್ಧ.\n\n⏱ 5 ನಿಮಿಷ ಮಾತ್ರ!\n\n'+url+'\n\n📝 ಸಲ್ಲಿಸು ಗುಂಡಿ ಒತ್ತಿ.',
+    hi:'नमस्ते '+name+'! 👋\n\nक्विज़ हिंदी में तैयार है।\n\n⏱ सिर्फ 5 मिनट!\n\n'+url+'\n\n📝 सबमिट बटन दबाएं।'
   };
-  return msgs[lang] || msgs.en;
+  return msgs[lang]||msgs.en;
 }
 
-
-function makeQR(id, url){
-  const el=document.getElementById(id); if(!el) return;
-  const img=new Image(); img.width=108; img.height=108; img.style.borderRadius='5px';
-  img.src='https://api.qrserver.com/v1/create-qr-code/?size=108x108&data='+encodeURIComponent(url)+'&margin=5';
-  img.onerror=function(){ el.innerHTML='<span class="muted" style="font-size:.7rem;padding:6px">QR needs<br>internet</span>'; };
-  el.innerHTML=''; el.appendChild(img);
-}
+function makeQR(id,url){ const el=document.getElementById(id); if(!el) return; const img=new Image(); img.width=108; img.height=108; img.style.borderRadius='5px'; img.src='https://api.qrserver.com/v1/create-qr-code/?size=108x108&data='+encodeURIComponent(url)+'&margin=5'; img.onerror=function(){ el.innerHTML='<span class="muted" style="font-size:.7rem;padding:6px">QR needs<br>internet</span>'; }; el.innerHTML=''; el.appendChild(img); }
 function copyLink(qid){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; navigator.clipboard.writeText(u).then(function(){toast('Link copied!');}).catch(function(){prompt('Copy:',u);}); }
 function testLink(qid){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(u) window.open(u,'_blank'); }
-// ══════════════════════
-// STUDENT QUIZ INIT
-// ══════════════════════
+function sendWA(phone,qid,lang,name){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; const msg=buildWAMessage(name,lang,u); window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank'); }
+function sendWANoPhone(qid,lang,name){ const u=document.getElementById('u_'+qid)?.textContent?.trim(); if(!u)return; const msg=buildWAMessage(name,lang,u); window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank'); }
+
+// ══════════════════════════════════════════════════════════
+// ★★★ STUDENT QUIZ — with 5-MINUTE TIMER ★★★
+// ══════════════════════════════════════════════════════════
+let QD=null, SA={};
+let _timerInterval=null, _timerSecsLeft=QUIZ_DURATION_SEC, _timerExpired=false;
+
 async function initStudent(encoded){
-  const d = decQ(encoded);
-  if(!d || !d.qid || !d.fbUrl){
-    document.getElementById('quiz-meta').innerHTML =
-      '<span style="color:var(--accent2)">❌ Invalid link. Ask your teacher to resend.</span>';
+  const d=decQ(encoded);
+  if(!d||!d.qs?.length){
+    document.getElementById('quiz-meta').innerHTML='<span style="color:var(--accent2)">❌ Invalid link. Ask your teacher to resend.</span>';
     return;
   }
-
-  // Already submitted on this device?
-  const prev = localStorage.getItem(DONE_PFX + d.qid);
+  const prev=localStorage.getItem(DONE_PFX+d.qid);
   if(prev){ try{ showDone(JSON.parse(prev)); return; }catch(e){} }
-
-  // Show loading
-  document.getElementById('quiz-meta').textContent = 'Loading quiz...';
-
-  // Fetch questions from Firebase
-  const quiz = await fbLoadQuiz(d.fbUrl, d.qid);
-  if(!quiz || !quiz.questions || !quiz.questions.length){
-    document.getElementById('quiz-meta').innerHTML =
-      '<span style="color:var(--accent2)">❌ Quiz not found. Ask your teacher to regenerate the link.</span>';
-    return;
-  }
-
-  QD = {
-    name:  d.name || quiz.name,
-    lang:  d.lang || quiz.lang,
-    qs:    quiz.questions,
-    qid:   d.qid,
-    fbUrl: d.fbUrl
-  };
-
-  const l = LANGS[QD.lang] || LANGS.en;
-  const i = I18[QD.lang]   || I18.en;
-
-  document.getElementById('quiz-meta').textContent = l.flag + ' Quiz — ' + QD.name;
+  QD={...d};
+  const l=LANGS[d.lang]||LANGS.en, i=I18[d.lang]||I18.en;
+  document.getElementById('quiz-meta').textContent=l.flag+' Quiz — '+d.name;
   document.querySelector('.quiz-shell').classList.add(l.cls);
-  document.getElementById('lbl-det').textContent   = i.det;
-  document.getElementById('lbl-name').textContent  = i.name;
-  document.getElementById('lbl-email').textContent = i.email;
-  document.getElementById('s-name').value          = QD.name;
-  document.getElementById('sub-lbl').textContent   = i.sub;
-  document.getElementById('name-entry').style.display = 'block';
+  document.getElementById('lbl-det').textContent=i.det;
+  document.getElementById('lbl-name').textContent=i.name;
+  document.getElementById('lbl-email').textContent=i.email;
+  document.getElementById('s-name').value=d.name;
+  document.getElementById('sub-lbl').textContent=i.sub;
+  document.getElementById('name-entry').style.display='block';
 }
 
 function startQuiz(){
-  const name = document.getElementById('s-name').value.trim();
+  const name=document.getElementById('s-name').value.trim();
   if(!name){ toast('Please enter your name','#ff6584'); return; }
-  document.getElementById('name-entry').style.display = 'none';
-  document.getElementById('quiz-area').style.display = 'block';
-  SA = {}; renderQs();
+  document.getElementById('name-entry').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  SA={}; renderQs();
+  startTimer(); // ★ Start 5-min timer
+}
+
+// ★ TIMER LOGIC
+function startTimer(){
+  _timerSecsLeft=QUIZ_DURATION_SEC;
+  _timerExpired=false;
+  updateTimerUI();
+  _timerInterval=setInterval(function(){
+    _timerSecsLeft--;
+    updateTimerUI();
+    if(_timerSecsLeft<=0){
+      clearInterval(_timerInterval);
+      _timerExpired=true;
+      onTimerExpired();
+    }
+  },1000);
+}
+
+function updateTimerUI(){
+  const el=document.getElementById('timer-display'); if(!el) return;
+  const arc=document.getElementById('timer-arc'); if(!arc) return;
+  const mins=Math.floor(_timerSecsLeft/60);
+  const secs=_timerSecsLeft%60;
+  el.textContent=mins+':'+(secs<10?'0':'')+secs;
+
+  // Color states
+  el.className='timer-display ';
+  if(_timerSecsLeft>120) el.className+='ok';
+  else if(_timerSecsLeft>60) el.className+='warn';
+  else el.className+='danger';
+
+  // SVG ring — shrinks as time passes
+  const pct=(_timerSecsLeft/QUIZ_DURATION_SEC)*100;
+  const circumference=100;
+  arc.style.strokeDashoffset=circumference-pct;
+  arc.style.stroke=_timerSecsLeft>120?'#00d4aa':_timerSecsLeft>60?'#ffd166':'#ff6584';
+}
+
+async function onTimerExpired(){
+  // Disable all options so student can't change answers
+  document.querySelectorAll('.opt').forEach(o=>o.style.pointerEvents='none');
+  const btn=document.getElementById('sub-btn');
+  if(btn){ btn.disabled=true; btn.innerHTML='⏱ Time up! Auto-submitting...'; }
+
+  // Short dramatic overlay
+  const overlay=document.createElement('div');
+  overlay.className='timer-expired-overlay';
+  overlay.innerHTML='<div style="font-size:3rem">⏰</div><h2>Time\'s Up!</h2><p>Your answers are being submitted automatically...</p><span class="spin" style="border-color:rgba(255,101,132,.3);border-top-color:var(--accent2);width:28px;height:28px"></span>';
+  document.body.appendChild(overlay);
+
+  // Wait 1.5s then force-submit whatever has been answered
+  await new Promise(r=>setTimeout(r,1500));
+  overlay.remove();
+  await submitQuiz(true); // pass flag = forced
 }
 
 function renderQs(){
   const {lang,qs}=QD, i=I18[lang]||I18.en, L=['A','B','C','D'], total=qs.length;
-  document.getElementById('prog-txt').textContent = i.q+' 0 '+i.of+' '+total;
-  document.getElementById('prog-pct').textContent = '0%';
+  document.getElementById('prog-txt').textContent=i.q+' 0 '+i.of+' '+total;
+  document.getElementById('prog-pct').textContent='0%';
   const c=document.getElementById('q-container'); c.innerHTML='';
   qs.forEach((q,qi)=>{
     const qT=tr(q.q,lang), opts=[q.a,q.b,q.c,q.d].map(o=>tr(o,lang));
@@ -1058,6 +833,7 @@ function renderQs(){
 }
 
 function pick(qi,oi){
+  if(_timerExpired) return; // no changes after expiry
   for(let j=0;j<4;j++) document.getElementById('o_'+qi+'_'+j)?.classList.remove('sel');
   document.getElementById('o_'+qi+'_'+oi)?.classList.add('sel');
   SA[qi]=oi;
@@ -1068,65 +844,66 @@ function pick(qi,oi){
   document.getElementById('prog-txt').textContent=i.q+' '+done+' '+i.of+' '+total;
 }
 
-async function submitQuiz(){
+// ★ forced=true when called by timer expiry (skips "answer all" check)
+async function submitQuiz(forced=false){
+  if(_timerExpired && !forced) return; // prevent double submit
+  clearInterval(_timerInterval); // stop timer if manually submitted early
+
   const total=QD.qs.length, done=Object.keys(SA).length;
-  if(done<total){
+  if(!forced && done<total){
     toast('Answer all '+total+' questions ('+done+'/'+total+' done)','#ffd166');
     for(let i=0;i<total;i++){ if(SA[i]===undefined){ document.getElementById('qc_'+i)?.scrollIntoView({behavior:'smooth',block:'center'}); break; } }
     return;
   }
 
   const btn=document.getElementById('sub-btn');
-  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Submitting...';
+  if(btn){ btn.disabled=true; btn.innerHTML='<span class="spin"></span> Submitting...'; }
 
   const name=document.getElementById('s-name').value.trim();
   const email=document.getElementById('s-email').value.trim();
   const {lang,qs,qid,fbUrl}=QD;
   const L=['A','B','C','D'];
 
-  const answers = qs.map((q,i)=>{
-    const ci=SA[i], cl=L[ci], ok=cl===q.correct;
-    return {
-      question:  q.q,
-      chosen:    cl,
-      chosenText:[q.a,q.b,q.c,q.d][ci],
-      correct:   q.correct,
-      correctText:[q.a,q.b,q.c,q.d][L.indexOf(q.correct)],
-      isCorrect: ok
-    };
+  const answers=qs.map((q,i)=>{
+    const ci=SA[i];
+    // ★ If no answer chosen (timer ran out), mark as unanswered
+    if(ci===undefined){
+      return {question:q.q,chosen:'—',chosenText:'(No answer)',correct:q.correct,correctText:[q.a,q.b,q.c,q.d][L.indexOf(q.correct)],isCorrect:false};
+    }
+    const cl=L[ci], ok=cl===q.correct;
+    return {question:q.q,chosen:cl,chosenText:[q.a,q.b,q.c,q.d][ci],correct:q.correct,correctText:[q.a,q.b,q.c,q.d][L.indexOf(q.correct)],isCorrect:ok};
   });
 
-  const score   = answers.filter(a=>a.isCorrect).length;
-  const percent = Math.round((score/total)*100);
-  const sub = {qid, name, email, lang, answers, score, total, percent, submittedAt: new Date().toLocaleString()};
+  const score=answers.filter(a=>a.isCorrect).length;
+  const percent=Math.round((score/total)*100);
+  const sub={
+    qid,name,email,lang,answers,score,total,percent,
+    timedOut: forced,  // ★ flag if auto-submitted
+    submittedAt:new Date().toLocaleString()
+  };
 
   // Mark answers on screen
   answers.forEach((a,qi)=>{
+    if(a.chosen==='—') return;
     const ci=L.indexOf(a.chosen), ri=L.indexOf(a.correct);
     document.getElementById('o_'+qi+'_'+ci)?.classList.add(a.isCorrect?'right':'wrong');
     if(!a.isCorrect) document.getElementById('o_'+qi+'_'+ri)?.classList.add('right');
   });
 
-  // Save locally so student can't re-submit
-  localStorage.setItem(DONE_PFX+qid, JSON.stringify(sub));
+  localStorage.setItem(DONE_PFX+qid,JSON.stringify(sub));
 
-  // ★ Push to Firebase — teacher reads from any device ★
   if(fbUrl){
-    const ok = await pushToFirebase(fbUrl, sub);
-    if(!ok) console.warn('Firebase push failed — submission saved locally only');
+    const ok=await pushToFirebase(fbUrl,sub);
+    if(!ok) console.warn('Firebase push failed — saved locally only');
   }
 
-  setTimeout(()=>showResult(sub), 400);
+  setTimeout(()=>showResult(sub),400);
 }
 
-async function pushToFirebase(fbUrl, sub){
+async function pushToFirebase(fbUrl,sub){
   try{
-    const endpoint = fbUrl.replace(/\/$/,'')+'/quizresults.json';
-    const r = await fetch(endpoint, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(sub)
-    });
+    const endpoint=fbUrl.replace(/\/$/,'')+'/quizresults.json';
+    const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(sub)});
     return r.ok;
   }catch(e){ return false; }
 }
@@ -1137,10 +914,12 @@ function showResult(sub){
   const l=LANGS[sub.lang]||LANGS.en, i=I18[sub.lang]||I18.en;
   const pct=sub.percent, emoji=pct>=80?'🏆':pct>=60?'😊':pct>=40?'🙂':'💪';
   const sc=pct>=70?'var(--green)':pct>=40?'var(--yellow)':'var(--accent2)';
+  const timedOutBadge=sub.timedOut?'<div style="background:rgba(255,101,132,.1);border:1px solid rgba(255,101,132,.3);border-radius:8px;padding:7px 12px;margin-bottom:9px;font-size:.82rem;color:var(--accent2);font-weight:600">⏰ Auto-submitted — time ran out</div>':'';
   ra.innerHTML=`<div class="res-screen">
     <div class="res-emoji">${emoji}</div>
     <div class="res-score" style="color:${sc}">${sub.score}/${sub.total}</div>
     <div class="res-label">${pct}% Correct — ${l.flag} ${l.name}</div>
+    ${timedOutBadge}
     <div class="card" style="text-align:left;padding:13px;margin-bottom:14px">
       <p class="muted">👤 ${sub.name}${sub.email?' · '+sub.email:''}</p>
       <p class="muted" style="margin-top:3px">🕐 ${sub.submittedAt}</p>
@@ -1170,43 +949,8 @@ function showDone(sub){
   </div>`;
 }
 
-// ══════════════════════
-// RESULTS DASHBOARD
-// ══════════════════════
+// ══════════════════════ RESULTS DASHBOARD ══════════════════════
 let _subs=[];
-
-async function loadResults(){
-  document.getElementById('res-body').innerHTML='<div class="empty"><span class="spin" style="border-color:rgba(108,99,255,.3);border-top-color:var(--accent)"></span><p style="margin-top:9px">Loading results...</p></div>';
-  if(!FB_URL){
-    document.getElementById('res-body').innerHTML='<div class="empty"><p style="color:var(--accent2);font-weight:700">⚠️ Firebase not connected.</p><p class="muted" style="margin-top:6px">Go to ☁ Database tab and set up Firebase first.</p></div>';
-    return;
-  }
-  _subs = await fbRead();
-  renderTable(_subs);
-}
-
-function renderTable(subs){
-  const el=document.getElementById('res-body');
-  document.getElementById('res-sub').textContent = subs.length ? subs.length+' student'+(subs.length>1?'s':'')+' submitted' : 'Waiting for submissions...';
-  if(!subs.length){
-    el.innerHTML='<div class="empty"><div style="font-size:2rem;margin-bottom:8px">📭</div><p>No submissions yet.</p><p class="muted" style="margin-top:5px">Students need to open their link and tap Submit.</p></div>';
-    return;
-  }
-  const maxQ = Math.max(...subs.map(s=>s.answers?.length||0));
-  const qH = Array.from({length:maxQ},(_,i)=>`<th>Q${i+1}</th>`).join('');
-  const rows = subs.map((s,idx)=>{
-    const cls=s.percent>=70?'sh':s.percent>=40?'sm':'sl';
-    const qC = Array.from({length:maxQ},(_,i)=>{
-      const a=s.answers?.[i];
-      if(!a) return '<td>—</td>';
-      return `<td title="${a.question}\nCorrect: ${a.correct} – ${a.correctText}">${a.isCorrect?`<span class="cy">✅ ${a.chosen}</span>`:`<span class="cn">❌ ${a.chosen}</span>`}</td>`;
-    }).join('');
-    const l=LANGS[s.lang]||LANGS.en;
-    return `<tr><td>${idx+1}</td><td><strong>${s.name}</strong></td><td>${l.flag} ${l.name}</td><td>${s.email||'—'}</td>${qC}<td><span class="${cls}">${s.score}/${s.total} (${s.percent}%)</span></td><td>${s.submittedAt}</td></tr>`;
-  }).join('');
-  el.innerHTML=`<div class="rw"><table class="rt"><thead><tr><th>#</th><th>Name</th><th>Language</th><th>Email</th>${qH}<th>Score</th><th>Submitted At</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-}
-
 function loadResults(){ return actualLoadResults(); }
 async function actualLoadResults(){
   document.getElementById('res-body').innerHTML='<div class="empty"><span class="spin" style="border-color:rgba(108,99,255,.3);border-top-color:var(--accent)"></span><p style="margin-top:9px">Loading results...</p></div>';
@@ -1214,8 +958,33 @@ async function actualLoadResults(){
     document.getElementById('res-body').innerHTML='<div class="empty"><p style="color:var(--accent2);font-weight:700">⚠️ Firebase not connected.</p><p class="muted" style="margin-top:6px">Go to ☁ Database tab and set up Firebase first.</p></div>';
     return;
   }
-  _subs = await fbRead();
+  _subs=await fbRead();
   renderTable(_subs);
+}
+
+function renderTable(subs){
+  const el=document.getElementById('res-body');
+  document.getElementById('res-sub').textContent=subs.length?subs.length+' student'+(subs.length>1?'s':'')+' submitted':'Waiting for submissions...';
+  if(!subs.length){
+    el.innerHTML='<div class="empty"><div style="font-size:2rem;margin-bottom:8px">📭</div><p>No submissions yet.</p><p class="muted" style="margin-top:5px">Students need to open their link and tap Submit.</p></div>';
+    return;
+  }
+  const maxQ=Math.max(...subs.map(s=>s.answers?.length||0));
+  const qH=Array.from({length:maxQ},(_,i)=>`<th>Q${i+1}</th>`).join('');
+  const rows=subs.map((s,idx)=>{
+    const cls=s.percent>=70?'sh':s.percent>=40?'sm':'sl';
+    const qC=Array.from({length:maxQ},(_,i)=>{
+      const a=s.answers?.[i];
+      if(!a) return '<td>—</td>';
+      if(a.chosen==='—') return '<td><span style="color:var(--muted);font-size:.75rem">⏰ N/A</span></td>';
+      return `<td title="${a.question}\nCorrect: ${a.correct}">${a.isCorrect?`<span class="cy">✅ ${a.chosen}</span>`:`<span class="cn">❌ ${a.chosen}</span>`}</td>`;
+    }).join('');
+    const l=LANGS[s.lang]||LANGS.en;
+    // ★ Show timed-out badge in results table
+    const nameCell=`<strong>${s.name}</strong>${s.timedOut?' <span style="font-size:.68rem;background:rgba(255,101,132,.15);color:var(--accent2);padding:1px 6px;border-radius:10px">⏰ Timed out</span>':''}`;
+    return `<tr><td>${idx+1}</td><td>${nameCell}</td><td>${l.flag} ${l.name}</td><td>${s.email||'—'}</td>${qC}<td><span class="${cls}">${s.score}/${s.total} (${s.percent}%)</span></td><td>${s.submittedAt}</td></tr>`;
+  }).join('');
+  el.innerHTML=`<div class="rw"><table class="rt"><thead><tr><th>#</th><th>Name</th><th>Language</th><th>Email</th>${qH}<th>Score</th><th>Submitted At</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
 async function clearResults(){
@@ -1224,58 +993,54 @@ async function clearResults(){
   toast('Results cleared');
 }
 
-// ══════════════════════
-// DOWNLOAD
-// ══════════════════════
+// ══════════════════════ DOWNLOAD ══════════════════════
 function dlCSV(){
   if(!_subs.length){ toast('No results to download!','#ff6584'); return; }
-  const maxQ = Math.max(..._subs.map(s=>s.answers?.length||0));
-  const hdr = ['#','Name','Language','Email',
+  const maxQ=Math.max(..._subs.map(s=>s.answers?.length||0));
+  const hdr=['#','Name','Language','Email','Timed Out',
     ...Array.from({length:maxQ},(_,i)=>[`Q${i+1}_Answer`,`Q${i+1}_Letter`,`Q${i+1}_Correct`,`Q${i+1}_Mark`]).flat(),
     'Score','Total','Percent','Submitted At'].join(',');
-  const rows = _subs.map((s,i)=>{
-    const qC = Array.from({length:maxQ},(_,j)=>{
-      const a=s.answers?.[j];
-      if(!a) return ',,,"N/A"';
+  const rows=_subs.map((s,i)=>{
+    const qC=Array.from({length:maxQ},(_,j)=>{
+      const a=s.answers?.[j]; if(!a) return ',,,"N/A"';
+      if(a.chosen==='—') return '"(No answer)","—","'+a.correctText+'","✗"';
       return `"${a.chosenText}",${a.chosen},"${a.correctText}","${a.isCorrect?'✓':'✗'}"`;
     }).join(',');
     const l=LANGS[s.lang]||LANGS.en;
-    return `${i+1},"${s.name}",${l.name},"${s.email||''}",${qC},${s.score},${s.total},${s.percent}%,"${s.submittedAt}"`;
+    return `${i+1},"${s.name}",${l.name},"${s.email||''}","${s.timedOut?'Yes':'No'}",${qC},${s.score},${s.total},${s.percent}%,"${s.submittedAt}"`;
   }).join('\n');
-  dl('\uFEFF'+hdr+'\n'+rows, 'quiz_results.csv', 'text/csv;charset=utf-8');
+  dl('\uFEFF'+hdr+'\n'+rows,'quiz_results.csv','text/csv;charset=utf-8');
 }
 
 function dlXLS(){
   if(!_subs.length){ toast('No results to download!','#ff6584'); return; }
-  const maxQ = Math.max(..._subs.map(s=>s.answers?.length||0));
-  const c = v=>`<Cell><Data ss:Type="String">${String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</Data></Cell>`;
-  const hdrs = ['#','Name','Language','Email',
+  const maxQ=Math.max(..._subs.map(s=>s.answers?.length||0));
+  const c=v=>`<Cell><Data ss:Type="String">${String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</Data></Cell>`;
+  const hdrs=['#','Name','Language','Email','Timed Out',
     ...Array.from({length:maxQ},(_,i)=>[`Q${i+1} Answer`,`Q${i+1} Letter`,`Q${i+1} Correct`,`Q${i+1} Mark`]).flat(),
     'Score','Total','Percent','Submitted At'];
-  const hRow = `<Row>${hdrs.map(h=>c(h)).join('')}</Row>`;
-  const rows = _subs.map((s,i)=>{
-    const qC = Array.from({length:maxQ},(_,j)=>{
-      const a=s.answers?.[j];
-      if(!a) return c('')+c('')+c('')+c('N/A');
+  const hRow=`<Row>${hdrs.map(h=>c(h)).join('')}</Row>`;
+  const rows=_subs.map((s,i)=>{
+    const qC=Array.from({length:maxQ},(_,j)=>{
+      const a=s.answers?.[j]; if(!a) return c('')+c('')+c('')+c('N/A');
+      if(a.chosen==='—') return c('(No answer)')+c('—')+c(a.correctText)+c('✗');
       return c(a.chosenText)+c(a.chosen)+c(a.correctText)+c(a.isCorrect?'✓':'✗');
     }).join('');
     const l=LANGS[s.lang]||LANGS.en;
-    return `<Row>${c(i+1)}${c(s.name)}${c(l.name)}${c(s.email||'')}${qC}${c(s.score)}${c(s.total)}${c(s.percent+'%')}${c(s.submittedAt)}</Row>`;
+    return `<Row>${c(i+1)}${c(s.name)}${c(l.name)}${c(s.email||'')}${c(s.timedOut?'Yes':'No')}${qC}${c(s.score)}${c(s.total)}${c(s.percent+'%')}${c(s.submittedAt)}</Row>`;
   }).join('');
-  dl(`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Quiz Results"><Table>${hRow}${rows}</Table></Worksheet></Workbook>`, 'quiz_results.xls', 'application/vnd.ms-excel');
+  dl(`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Quiz Results"><Table>${hRow}${rows}</Table></Worksheet></Workbook>`,'quiz_results.xls','application/vnd.ms-excel');
 }
 
-function dl(content, name, type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type})); a.download=name; a.click(); }
+function dl(content,name,type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type})); a.download=name; a.click(); }
 
-// ══════════════════════
-// TOAST
-// ══════════════════════
+// ══════════════════════ TOAST ══════════════════════
 let _tt;
-function toast(msg, bg='#00d4aa'){ const el=document.getElementById('toast'); el.textContent=msg; el.style.background=bg; el.style.color=bg==='#00d4aa'?'#060612':'#fff'; el.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),3000); }
+function toast(msg,bg='#00d4aa'){ const el=document.getElementById('toast'); el.textContent=msg; el.style.background=bg; el.style.color=bg==='#00d4aa'?'#060612':'#fff'; el.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),3000); }
 
 // INIT
 route();
-document.getElementById('admin-pw')?.addEventListener('keydown', e=>{ if(e.key==='Enter') adminLogin(); });
+document.getElementById('admin-pw')?.addEventListener('keydown',e=>{ if(e.key==='Enter') adminLogin(); });
 </script>
 </body>
 </html>
